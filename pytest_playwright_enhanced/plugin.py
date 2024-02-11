@@ -11,6 +11,18 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="headed",
         help="Should tests be ran in headed mode, defaults to headless.",
     )
+    parser.addoption(
+        "--browser",
+        action="store",
+        # Todo: implement choice(s).
+    )
+    parser.addoption(
+        "--debug",
+        action="store_true",
+        default=False,
+        dest="debug",
+        help="Allow debugging by forcing `PWDEBUG=console`.",
+    )
 
     parser.addoption(
         "--artifacts",
@@ -28,7 +40,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
     parser.addoption(
-        "--screenshot-on-fail",
+        "--video-on-fail",
         action="store_false",
         default=True,
         dest="video_on_fail",
