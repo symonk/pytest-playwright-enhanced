@@ -4,4 +4,4 @@ offer an assortment of functionality and enhancements to improve the user experi
 
 
 > [!CAUTION]
-> `pytest-playwright-enhanced` requires broker versions 0.11.0.0 or greater. 
+> `pytest-playwright-enhanced` is in the alpha stage.
