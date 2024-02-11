@@ -1,2 +1,6 @@
-# pytest-playwright-pro
-A pytest plugin for improved user experience when using playwright with python and pytest
+### pytest-playwright-enhanced
+An alternative implementation for pytest when using python playwright for end2end testing of web applications.  `pytest-playwright-enhanced` aims to 
+offer an assortment of functionality and enhancements to improve the user experience.
+
+> [!INFO]
+> `pytest-playwright-enhanced` is still in the alpha stages.
