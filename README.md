@@ -6,9 +6,15 @@
 
 
 ### pytest-playwright-enhanced
-An alternative implementation for pytest when using python playwright for end2end testing of web applications.  `pytest-playwright-enhanced` aims to 
-offer an assortment of functionality and enhancements to improve the user experience.
-
 
 > [!CAUTION]
 > `pytest-playwright-enhanced` is in the alpha stage.
+
+`pytest-playwright-enhanced` is an advanced tool kit for testing web applications.  The idea behind the project is build on the robustness of playwright
+to simplify a lot of the boilerplate that comes with testing frameworks.  `pytest-playwright-enhanced` offers additional capabilities and a simplified
+API.  Some of the functionality you get for free;
+
+* Browser management
+* Powerful, human readable API's
+* Improved automatic artifacting and debuggability
+* Much more...
