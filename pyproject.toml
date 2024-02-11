@@ -43,3 +43,5 @@ docstring-code-format = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
+
+[tool.pytest]
