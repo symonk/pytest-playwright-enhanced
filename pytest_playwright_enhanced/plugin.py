@@ -12,6 +12,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Should tests be ran in headed mode, defaults to headless.",
     )
     parser.addoption(
+        "--root-url",
+        action="store",
+        default=None,
+        dest="root_url",
+        help="The root url that should be visited when launching a page.",
+    )
+    parser.addoption(
         "--browser",
         action="store",
         # Todo: implement choice(s).
