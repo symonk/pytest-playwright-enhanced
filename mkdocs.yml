@@ -21,7 +21,8 @@ extra_css:
 watch:
   - pytest_playwright_enhanced
 nav:
-    - Introduction: index.md
+    - Installation: install.md 
+    - Quickstart: index.md
 plugins:
     - search
     - mkdocstrings:
