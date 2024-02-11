@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pytest-playwright-enhanced"
+version = "0.1.0"
+description = "A pytest plugin for playwright python"
+authors = ["Simon K <jackofspaces@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+playwright = "^1.41.2"
+pytest = "^8.0.0"
+
+[tool.poetry.group.dev.dependencies]
+tox = "^4.12.1"
+towncrier = "^23.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
