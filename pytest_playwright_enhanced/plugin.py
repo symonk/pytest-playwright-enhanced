@@ -1,4 +1,5 @@
 import pytest
+from playwright import sync_api as pwsync
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -60,3 +61,14 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="trace_on_fail",
         help="Retain captured trace in the artifacts directory if a test fails.",
     )
+
+
+@pytest.fixture
+def page() -> pwsync.Page:
+    """A fresh page instance between tests."""
+    ...
+
+
+@pytest.fixture(scope="session")
+def context() -> pwsync.BrowserContext:
+    """A scope session scoped browser context."""
