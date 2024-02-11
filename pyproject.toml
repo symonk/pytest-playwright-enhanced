@@ -13,6 +13,14 @@ pytest = "^8.0.0"
 [tool.poetry.group.dev.dependencies]
 tox = "^4.12.1"
 towncrier = "^23.11.0"
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.9"
+mkdocstrings = "^0.24.0"
+mkdocstrings-python = "^1.8.0"
+coverage = "^7.4.1"
+typing-extensions = "^4.9.0"
+pytest-xdist = "^3.5.0"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
