@@ -69,6 +69,6 @@ def page() -> pwsync.Page:
     ...
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def context() -> pwsync.BrowserContext:
     """A scope session scoped browser context."""
