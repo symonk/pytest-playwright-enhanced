@@ -1,0 +1,11 @@
+[run]
+source = pytest_playwright_enhanced/
+omit = tests/
+
+[report]
+sort = -Cover
+skip_empty = True
+precision = 2
+exclude_lines =
+    ^\s*raise NotImplementedError\b
+    ^\s*return NotImplemented\b
