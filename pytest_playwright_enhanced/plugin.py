@@ -21,8 +21,25 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
     parser.addoption(
         "--browser",
+        action="append",
+        default=[],
+        type=list,
+        dest="browser",
+        help="The browser engine to use.",
+        choices=["chromium", "webkit", "firefox"],
+    )
+    parser.addoption(
+        "--emulate",
         action="store",
-        # Todo: implement choice(s).
+        dest="emulate",
+        help="The device to be emulated.",
+    )
+    parser.addoption(
+        "--throttle",
+        action="store",
+        dest="throttle",
+        type=float,
+        help="Add arbitrary delay between playwright actions.",
     )
     parser.addoption(
         "--debug",
