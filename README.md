@@ -7,6 +7,10 @@
 
 ### pytest-playwright-enhanced
 
+`playwright` is a fantastic tool, this repository aims to build on the amazing features of the tool.  This repository was born due to wanting
+to bake in additional functionality that would never be accepted back into the core mainstream python package.
+
+
 > [!CAUTION]
 > `pytest-playwright-enhanced` is in the alpha stage.
 
@@ -18,3 +22,11 @@ API.  Some of the functionality you get for free;
 * Powerful, human readable API's
 * Improved automatic artifacting and debuggability
 * Much more...
+
+`pytest-playwright-enhanced` is a complete drop-in replacement to `pytest-playwright` and is a case of just swapping out the dependency, then utilising
+some of the new types and functionality should you need it, this allows for an easy transition period.  
+
+> [!CAUTION]
+> This backwards compatibility depends on alot of non breaking changes upstream!
+
+-----

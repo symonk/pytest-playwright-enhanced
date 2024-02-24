@@ -82,10 +82,27 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="trace_on_fail",
         help="Retain captured trace in the artifacts directory if a test fails.",
     )
+    parser.addoption(
+        "--selenium-grid",
+        action="store",
+        default=None,
+        dest="selenium_grid",
+        help="The selenium grid endpoint to distribute tests remotely (experimental)",
+    )
+
+
+# The natural flow of playwright is to:
+#   * Create a playwright object
+#   * Launch a browser instance from that playwright object
+#   * Launch a new browser context from that browser instance
+#   * Launch a new (or multiple) page objects from the context.
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
+    """Launch the core playwright context manager, at present only a
+    synchronous path is supported however the plan is to add asynchronous
+    support in future."""
     with pwsync.Playwright() as pw:
         yield pw
 
@@ -98,15 +115,18 @@ def browser_type(playwright: pwsync.Playwright) -> pwsync.BrowserType:
 
 @pytest.fixture(scope=FixtureScopes.Session)
 def browser(
-    browser_type: pwsync.BrowserType, callable: typing.Callable[[], pwsync.Browser]
+    browser_arguments: dict[str, str],
+    dynamic_browser_fn: typing.Callable[[], pwsync.Browser],
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
+    return dynamic_browser_fn(**browser_arguments)
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
 def browser_arguments() -> dict[str, str]:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance."""
+    return {}
 
 
 @pytest.fixture
