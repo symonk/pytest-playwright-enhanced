@@ -161,3 +161,21 @@ def context(
     context = browser.new_context(**context_arguments)
     yield context
     context.close()
+
+
+# ----- Hook Specifics
+
+PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
+
+
+@pytest.hookimpl(wrapper=True, tryFirst=True)
+def pytest_runtest_makereport(
+    item: pytest.Item, call: str
+) -> typing.Generator[None, None, pytest.CollectReport]:
+    """A hook implementation to determine if a test passed.
+    Fixtures can fetch this information later (post-yield)
+    by inspecting the request.node.stash with the PhaseReportKey.
+    """
+    report = yield
+    item.stash.setdefault(PhaseReportKey, {})[report.when] = report
+    return report
