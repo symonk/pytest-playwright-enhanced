@@ -121,7 +121,7 @@ def browser(
     """Yields the core browser instance."""
     browser = dynamic_browser_fn(**browser_arguments)
     yield browser
-    browser.close(0)
+    browser.close()
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
