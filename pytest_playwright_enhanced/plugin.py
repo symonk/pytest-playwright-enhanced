@@ -141,7 +141,8 @@ def context_arguments() -> ContextKwargs:
 
 @pytest.fixture
 def page(
-    pytestconfig: pytest.Config, context: pwsync.BrowserContext
+    pytestconfig: pytest.Config,
+    context: pwsync.BrowserContext,
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
     # Todo: Allow per page **kwargs
@@ -155,7 +156,8 @@ def page(
 
 @pytest.fixture(scope=FixtureScopes.Function)
 def context(
-    browser: pwsync.Browser, context_arguments: ContextKwargs
+    browser: pwsync.Browser,
+    context_arguments: ContextKwargs,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     context = browser.new_context(**context_arguments)
@@ -168,9 +170,9 @@ def context(
 PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
 
 
-@pytest.hookimpl(wrapper=True, tryFirst=True)
+@pytest.hookimpl(wrapper=True, tryfirst=True)
 def pytest_runtest_makereport(
-    item: pytest.Item, call: str
+    item: pytest.Item,
 ) -> typing.Generator[None, None, pytest.CollectReport]:
     """A hook implementation to determine if a test passed.
     Fixtures can fetch this information later (post-yield)
