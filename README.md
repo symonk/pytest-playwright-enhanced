@@ -31,3 +31,12 @@ some of the new types and functionality should you need it, this allows for an e
 > This backwards compatibility depends on alot of non breaking changes upstream!
 
 -----
+
+## Quick Start
+
+Quickly get running by doing the following:
+
+* `pip install pytest-playwright-enhanced`
+* `playwright install`
+
+-----

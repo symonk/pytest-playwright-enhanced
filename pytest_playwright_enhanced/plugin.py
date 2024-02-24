@@ -119,7 +119,9 @@ def browser(
     dynamic_browser_fn: typing.Callable[[], pwsync.Browser],
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    return dynamic_browser_fn(**browser_arguments)
+    browser = dynamic_browser_fn(**browser_arguments)
+    yield browser
+    browser.close(0)
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
@@ -128,13 +130,30 @@ def browser_arguments() -> dict[str, str]:
     arguments to the launched Browser instance."""
     return {}
 
+@pytest.fixture(scope=FixtureScopes.Function)
+def context_arguments() -> dict[str, str]:
+    """The configuration to launching contexts.  Override this fixture to pass arbitrary
+    arguments to the launched Context instance."""
+    return {}
+
 
 @pytest.fixture
-def page(context: pwsync.BrowserContext) -> pwsync.Page:
-    """A fresh page instance between tests."""
-    return context.new_page()
+def page(pytestconfig: pytest.Config, context: pwsync.BrowserContext) -> typing.Generator[pwsync.Page, None, None]:
+    """Launch a new page (tab) as a child of the browser context."""
+    # Todo: Allow per page **kwargs
+    page = context.new_page()
+    base_url = pytestconfig.option.base_url 
+    if base_url is not None:
+        page.goto(base_url)
+    yield page
+    page.close()
 
 
 @pytest.fixture(scope=FixtureScopes.Function)
-def context() -> pwsync.BrowserContext:
+def context(
+    browser: pwsync.Browser,
+    context_arguments: dict[str, str]) -> typing.Generator[pwsync.BrowserContext, None, None]: 
     """A scope session scoped browser context."""
+    context = browser.new_context(**context_arguments)
+    yield context
+    context.close()
