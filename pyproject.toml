@@ -33,7 +33,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 88
 indent-width = 4
-target-version = "py311"
+target-version = "py38"
 
 [tool.ruff.lint]
 select = [
@@ -70,7 +70,6 @@ select = [
     "PL",
     "FLY",
     "PERF",
-    "FURB",
     "RUF",
     ]
 fixable = ["ALL"]
