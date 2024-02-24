@@ -5,6 +5,9 @@ description = "A pytest plugin for playwright python"
 authors = ["Simon K <jackofspaces@gmail.com>"]
 readme = "README.md"
 
+[tool.poetry.plugins.pytest11]
+pytest_playwright_enhanced = "pytest_playwright_enhanced.plugin"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 playwright = "^1.41.2"
