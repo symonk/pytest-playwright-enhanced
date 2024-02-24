@@ -47,10 +47,10 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Add arbitrary delay between playwright actions.",
     )
     parser.addoption(
-        "--debug",
+        "--pw-debug-",
         action="store_true",
         default=False,
-        dest="debug",
+        dest="pw_debug",
         help="Allow debugging by forcing `PWDEBUG=console`.",
     )
 
