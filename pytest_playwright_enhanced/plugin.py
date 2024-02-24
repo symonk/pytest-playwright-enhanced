@@ -130,6 +130,7 @@ def browser_arguments() -> dict[str, str]:
     arguments to the launched Browser instance."""
     return {}
 
+
 @pytest.fixture(scope=FixtureScopes.Function)
 def context_arguments() -> dict[str, str]:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
@@ -138,11 +139,13 @@ def context_arguments() -> dict[str, str]:
 
 
 @pytest.fixture
-def page(pytestconfig: pytest.Config, context: pwsync.BrowserContext) -> typing.Generator[pwsync.Page, None, None]:
+def page(
+    pytestconfig: pytest.Config, context: pwsync.BrowserContext
+) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
     # Todo: Allow per page **kwargs
     page = context.new_page()
-    base_url = pytestconfig.option.base_url 
+    base_url = pytestconfig.option.base_url
     if base_url is not None:
         page.goto(base_url)
     yield page
@@ -151,8 +154,8 @@ def page(pytestconfig: pytest.Config, context: pwsync.BrowserContext) -> typing.
 
 @pytest.fixture(scope=FixtureScopes.Function)
 def context(
-    browser: pwsync.Browser,
-    context_arguments: dict[str, str]) -> typing.Generator[pwsync.BrowserContext, None, None]: 
+    browser: pwsync.Browser, context_arguments: dict[str, str]
+) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     context = browser.new_context(**context_arguments)
     yield context
