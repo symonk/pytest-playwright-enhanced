@@ -4,6 +4,7 @@ import pytest
 from playwright import sync_api as pwsync
 
 from .const import FixtureScopes
+from .types import ContextKwargs
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -115,7 +116,7 @@ def browser_type(playwright: pwsync.Playwright) -> pwsync.BrowserType:
 
 @pytest.fixture(scope=FixtureScopes.Session)
 def browser(
-    browser_arguments: dict[str, str],
+    browser_arguments: ContextKwargs,
     dynamic_browser_fn: typing.Callable[[], pwsync.Browser],
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
@@ -125,14 +126,14 @@ def browser(
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
-def browser_arguments() -> dict[str, str]:
+def browser_arguments() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance."""
     return {}
 
 
 @pytest.fixture(scope=FixtureScopes.Function)
-def context_arguments() -> dict[str, str]:
+def context_arguments() -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance."""
     return {}
@@ -154,7 +155,7 @@ def page(
 
 @pytest.fixture(scope=FixtureScopes.Function)
 def context(
-    browser: pwsync.Browser, context_arguments: dict[str, str]
+    browser: pwsync.Browser, context_arguments: ContextKwargs
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     context = browser.new_context(**context_arguments)
