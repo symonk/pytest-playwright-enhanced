@@ -2,7 +2,6 @@
 import argparse
 import subprocess
 import sys
-import typing
 
 
 def build_namespace() -> argparse.Namespace:
@@ -29,46 +28,48 @@ def main() -> int:
             commit_and_push()
         else:
             print(
-                "Changes detected but script was executed with --no-push so changes remain local."
+                "Changes detected but script was executed with --no-push so changes remain local.",
             )
     print(f"Exited: {return_code}")
     return return_code
 
 
-def remove_lock_if_exists():
+def remove_lock_if_exists() -> int:
     return _run_command(("rm", "-f", "poetry.lock"))
 
 
-def poetry_update():
+def poetry_update() -> int:
     return _run_command(("poetry", "update"))
 
 
-def poetry_up_deps():
+def poetry_up_deps() -> int:
     return _run_command(("poetry", "up"))
 
 
-def pre_commit_update():
+def pre_commit_update() -> int:
     return _run_command(("pre-commit", "autoupdate"))
 
 
-def commit_and_push():
+def commit_and_push() -> tuple[int, int, int]:
     return (
         _run_command(
-            ("git", "add", "poetry.lock", ".pre-commit-config.yaml", "pyproject.toml")
+            ("git", "add", "poetry.lock", ".pre-commit-config.yaml", "pyproject.toml"),
         )
         + _run_command(("git", "commit", "-m", ":rocket: `dependency upgrades`."))
         + _run_command(("git", "push"))
     )
 
 
-def _run_command(command: typing.Tuple[str, ...]) -> int:
-    """
-    Run a command and return the subprocess exit code.
+def _run_command(command: tuple[str, ...]) -> int:
+    """Run a command and return the subprocess exit code.
     :param command: Command to run.
     :return:
     """
     return subprocess.run(
-        command, stdout=sys.stdout, stderr=subprocess.STDOUT
+        command,
+        stdout=sys.stdout,
+        stderr=subprocess.STDOUT,
+        check=False,
     ).returncode
 
 

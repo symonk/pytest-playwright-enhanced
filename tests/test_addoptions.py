@@ -1,5 +1,5 @@
-from pytest import Pytester
+import pytest
 
 
-def test_headed_option_is_correct(pytester: Pytester) -> None:
-    ...
+def test_headed_option_is_correct(pytester: pytest.Pytester) -> None:
+    _ = pytester

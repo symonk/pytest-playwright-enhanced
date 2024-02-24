@@ -9,7 +9,8 @@ from .types import ContextKwargs
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Register argparse-style options and ini-style configuration values
-    for the plugin."""
+    for the plugin.
+    """
     parser.addoption(
         "--headed",
         action="store_true",
@@ -103,7 +104,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
     synchronous path is supported however the plan is to add asynchronous
-    support in future."""
+    support in future.
+    """
     with pwsync.Playwright() as pw:
         yield pw
 
@@ -111,7 +113,7 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
 @pytest.fixture(scope=FixtureScopes.Function)
 def browser_type(playwright: pwsync.Playwright) -> pwsync.BrowserType:
     """Dynamically fetch the browser type for this specific test."""
-    return getattr(playwright, "browser")
+    return playwright.browser
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
@@ -128,24 +130,25 @@ def browser(
 @pytest.fixture(scope=FixtureScopes.Session)
 def browser_arguments() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
-    arguments to the launched Browser instance."""
+    arguments to the launched Browser instance.
+    """
     return {}
 
 
 @pytest.fixture(scope=FixtureScopes.Function)
 def context_arguments() -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
-    arguments to the launched Context instance."""
+    arguments to the launched Context instance.
+    """
     return {}
 
 
-@pytest.fixture
+@pytest.fixture()
 def page(
     pytestconfig: pytest.Config,
     context: pwsync.BrowserContext,
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
-    # Todo: Allow per page **kwargs
     page = context.new_page()
     base_url = pytestconfig.option.base_url
     if base_url is not None:
@@ -167,7 +170,7 @@ def context(
 
 # ----- Hook Specifics
 
-PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
+PhaseReportKey = pytest.StashKey[dict[str, pytest.CollectReport]]()
 
 
 @pytest.hookimpl(wrapper=True, tryfirst=True)

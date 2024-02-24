@@ -32,8 +32,49 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 88
-lint.select = ["F", "I"]
+indent-width = 4
 target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "F", 
+    "I", 
+    "N", 
+    "W", 
+    "UP", 
+    "ANN", 
+    "BLE", 
+    "FBT", 
+    "B", 
+    "A", 
+    "COM", 
+    "C4", 
+    "DTZ", 
+    "T10", 
+    "EM",
+    "EXE",
+    "FA",
+    "ISC",
+    "ICN",
+    "INP",
+    "PIE",
+    "PYI",
+    "PT",
+    "RSE",
+    "RET",
+    "SLOT",
+    "SIM",
+    "ARG",
+    "PTH",
+    "ERA",
+    "PL",
+    "FLY",
+    "PERF",
+    "FURB",
+    "RUF",
+    ]
+fixable = ["ALL"]
+unfixable = []
 
 [tool.ruff.format]
 quote-style = "double"

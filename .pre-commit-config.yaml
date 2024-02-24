@@ -1,5 +1,9 @@
 files: ^(pytest_playwright_enhanced|scripts|tests)
 repos:
+  # An identity hook that writes files to check to stdout.
+  - repo: meta
+    hooks:
+      - id: identity
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.2.2
     hooks:
