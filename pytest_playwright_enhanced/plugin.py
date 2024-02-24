@@ -170,7 +170,7 @@ def context(
 
 # ----- Hook Specifics
 
-PhaseReportKey = pytest.StashKey[dict[str, pytest.CollectReport]]()
+PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
 
 
 @pytest.hookimpl(wrapper=True, tryfirst=True)
