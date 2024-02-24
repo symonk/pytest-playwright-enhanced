@@ -1,4 +1,4 @@
 import typing
 
-PageKwargs = dict[str, typing.Any]
-ContextKwargs = dict[str, typing.Any]
+PageKwargs = typing.Dict[str, typing.Any]
+ContextKwargs = typing.Dict[str, typing.Any]
