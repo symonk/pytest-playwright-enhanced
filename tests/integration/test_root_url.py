@@ -24,3 +24,21 @@ def test_root_url_override(pytester: pytest.Pytester) -> None:
     result = pytester.runpytest("--root-url", url)
     result.assert_outcomes(passed=1)
     assert result.ret == pytest.ExitCode.OK
+
+
+def test_root_url_can_be_override_in_user_space(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile(
+        """
+        import pytest
+
+        @pytest.fixture(scope="session")
+        def root_url():
+            return "https://www.google.com"
+
+        def test_override_root_url(root_url):
+            assert root_url == "https://www.google.com"
+
+    """,
+    )
+    result = pytester.runpytest()
+    result.assert_outcomes(passed=1)
