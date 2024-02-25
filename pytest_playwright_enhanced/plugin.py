@@ -148,6 +148,13 @@ def is_firefox(browser_engine: str) -> bool:
 
 
 @pytest.fixture(scope=FixtureScope.Session)
+def root_url(pytestconfig: pytest.Config) -> str:
+    """Returns the root url. If provided pages will automatically
+    attempt to load this url after creation."""
+    return pytestconfig.option.root_url
+
+
+@pytest.fixture(scope=FixtureScope.Session)
 def browser(
     request: pytest.FixtureRequest,
     playwright: pwsync.Playwright,
