@@ -7,8 +7,9 @@
 
 ### pytest-playwright-enhanced
 
-`pytest-playwright-enhanced` is a batteries included `pytest` plugin for the `playwright` that offers extended functionality
-with a focus on removing boilerplate code for projects that wish to test modern, web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
+`pytest-playwright-enhanced` is a batteries included `pytest` plugin for the `playwright` python bindings that 
+offers extended functionality with a focus on removing boilerplate code for projects that wish to test modern 
+web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
 
  * Automatic, browser management and installation if required.
  * Improved, human readable APIs that built on top of playwrights API.

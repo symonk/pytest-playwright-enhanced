@@ -74,7 +74,7 @@ select = [
     ]
 fixable = ["ALL"]
 unfixable = []
-ignore = ["EM101"]
+ignore = ["EM101", "ISC001", "COM812"]
 
 [tool.ruff.format]
 quote-style = "double"
