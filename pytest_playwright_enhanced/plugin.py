@@ -134,7 +134,9 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "context_kwargs: provide additional arguments for new playwright contexts",
     )
-    config.hook.pytest_playwright_acquire_binaries(config=config)
+    # conditionally invoke the acquire binaries hook.
+    if config.option.acquire_drivers:
+        config.hook.pytest_playwright_acquire_binaries(config=config)
 
 
 @pytest.hookimpl
