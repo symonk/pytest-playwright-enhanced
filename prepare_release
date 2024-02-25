@@ -3,3 +3,4 @@
 echo "Bumping version from $1 to $2."
 poetry version "$2"
 sed -i s/playwright-enhanced-$1/playwright-enhanced-$2/g tests/integration/test_stdout.py
+tox -e py311
