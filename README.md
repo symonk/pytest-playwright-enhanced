@@ -12,11 +12,11 @@ offers extended functionality with a focus on removing boilerplate code for proj
 web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
 
  * Automatic, browser management and installation if required.
- * Improved, human readable APIs that built on top of playwrights API.
- * Improved artifacting and debuggability.
+ * Improved, human readable APIs that build on top of playwrights API.
+ * Improved artifacting and debugability.
  * `Asynchronous` support.
  * Custom `hooks` to allow you to plugin and modify behaviour at runtime.
- * Much More
+ * Much More...
 
 
 > [!CAUTION]
