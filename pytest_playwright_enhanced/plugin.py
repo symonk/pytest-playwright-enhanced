@@ -106,7 +106,7 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     synchronous path is supported however the plan is to add asynchronous
     support in future.
     """
-    with pwsync.Playwright() as pw:
+    with pwsync.sync_playwright() as pw:
         yield pw
 
 
@@ -143,7 +143,7 @@ def context_arguments() -> ContextKwargs:
     return {}
 
 
-@pytest.fixture()
+@pytest.fixture(scope=FixtureScopes.Function)
 def page(
     pytestconfig: pytest.Config,
     context: pwsync.BrowserContext,
