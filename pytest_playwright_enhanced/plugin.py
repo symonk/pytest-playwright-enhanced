@@ -112,13 +112,6 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
-# The natural flow of playwright is to:
-#   * Create a playwright object
-#   * Launch a browser instance from that playwright object
-#   * Launch a new browser context from that browser instance
-#   * Launch a new (or multiple) page objects from the context.
-
-
 @pytest.fixture(scope=FixtureScope.Session)
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
