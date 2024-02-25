@@ -10,6 +10,7 @@ from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
+from .utils import register_env_defer
 
 
 @pytest.hookimpl
@@ -142,21 +143,18 @@ def pytest_configure(config: pytest.Config) -> None:
     if config.option.acquire_drivers:
         _ = config.hook.pytest_playwright_acquire_binaries(config=config)
 
-    # conditionally enable console debugging.
     if config.option.pw_debug:
         os.environ[EnvironmentVars.PWDEBUG] = "console"
         config.add_cleanup(lambda: os.environ.pop(EnvironmentVars.PWDEBUG))
 
     if (driver_download_host := config.option.driver_download_host) is not None:
-        os.environ[EnvironmentVars.PLAYWRIGHT_DOWNLOAD_HOST] = driver_download_host
-        config.add_cleanup(
-            lambda: os.environ.pop(EnvironmentVars.PLAYWRIGHT_DOWNLOAD_HOST)
+        register_env_defer(
+            EnvironmentVars.PLAYWRIGHT_DOWNLOAD_HOST, driver_download_host, config
         )
 
     if (driver_path := config.option.driver_path) is not None:
-        os.environ[EnvironmentVars.PLAYWRIGHT_BROWSERS_PATH] = driver_path
-        config.add_cleanup(
-            lambda: os.environ.pop(EnvironmentVars.PLAYWRIGHT_BROWSERS_PATH)
+        register_env_defer(
+            EnvironmentVars.PLAYWRIGHT_BROWSERS_PATH, driver_path, config
         )
 
 
