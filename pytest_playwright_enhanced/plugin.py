@@ -1,4 +1,6 @@
 import os
+import pathlib
+import subprocess
 import typing
 
 import pytest
@@ -99,14 +101,14 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--download-host",
         action="store",
         default=None,
-        dest="download_host",
+        dest="driver_download_host",
         help="The download for binaries, such as an internal artifact repository.",
     )
     pwe.addoption(
         "--drivers-path",
         action="store",
         default=None,
-        dest="drivers_path",
+        dest="driver_path",
         help="The download path where playwright downloads should store browser binaries.",
     )
     pwe.addoption(
@@ -137,11 +139,17 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     # conditionally invoke the acquire binaries hook.
     if config.option.acquire_drivers:
-        config.hook.pytest_playwright_acquire_binaries(config=config)
+        _ = config.hook.pytest_playwright_acquire_binaries(config=config)
 
     # conditionally enable console debugging.
     if config.option.pw_debug:
         os.environ["PWDEBUG"] = "console"
+
+    if driver_download_host := config.option.driver_download_host is not None:
+        os.environ["PLAYWRIGHT_DOWNLOAD_HOST"] = driver_download_host
+
+    if driver_path := config.option.driver_path is not None:
+        os.environ["PLAYWRIGHT_BROWSERS_PATH"] = driver_path
 
 
 @pytest.hookimpl
@@ -153,14 +161,25 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
     pluginmanager.add_hookspecs(playwright_hooks)
 
 
-@pytest.hookimpl
+@pytest.hookimpl(trylast=True)
 def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:
     """The default implementation for binary acquisition.
 
     :param config: The `pytest.Config` object. (auto injected).
+
+    # Todo: This is a dummy implementation and needs some love.
     """
-    print("DOWNLOADING BINARIES!")
+    print("DOWNLOADED BINARIES")
     _ = config
+    return None
+    completed_process = subprocess.run(
+        ["playwright", "install"],
+        capture_output=True,
+        check=False,
+    )
+    if completed_process.returncode:
+        raise pytest.UsageError("Problem downloading playwright driver binaries!")
+    return pathlib.Path()
 
 
 @pytest.fixture(scope=FixtureScope.Function)

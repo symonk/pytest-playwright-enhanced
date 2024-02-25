@@ -7,29 +7,20 @@
 
 ### pytest-playwright-enhanced
 
-`playwright` is a fantastic tool, this repository aims to build on the amazing features of the tool.  This repository was born due to wanting
-to bake in additional functionality that would never be accepted back into the core mainstream python package.
+`pytest-playwright-enhanced` is a batteries included `pytest` plugin for the `playwright` that offers extended functionality
+with a focus on removing boilerplate code for projects that wish to test modern, web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
+
+ * Automatic, browser management and installation if required.
+ * Improved, human readable APIs that built on top of playwrights API.
+ * Improved artifacting and debuggability.
+ * `Asynchronous` support.
+ * Custom `hooks` to allow you to plugin and modify behaviour at runtime.
+ * Much More
 
 
 > [!CAUTION]
 > `pytest-playwright-enhanced` is in the alpha stage.
 
-`pytest-playwright-enhanced` is an advanced tool kit for testing web applications.  The idea behind the project is build on the robustness of playwright
-to simplify a lot of the boilerplate that comes with testing frameworks.  `pytest-playwright-enhanced` offers additional capabilities and a simplified
-API.  Some of the functionality you get for free;
-
-* Browser management
-* Powerful, human readable API's
-* Improved automatic artifacting and debuggability
-* Async support
-* Custom hooks
-* Much more...
-
-`pytest-playwright-enhanced` is a complete drop-in replacement to `pytest-playwright` and is a case of just swapping out the dependency, then utilising
-some of the new types and functionality should you need it, this allows for an easy transition period.  
-
-> [!CAUTION]
-> This backwards compatibility depends on alot of non breaking changes upstream!
 
 -----
 
@@ -48,3 +39,11 @@ Quickly get running by doing the following:
 -----
 
 `playwright` - At present this returns the sync `Playwright` instance.
+
+
+-----
+
+
+## Hooks
+
+`pytest_playwright_acquire_binaries` - Hook in and customise binary acquisition at runtime.
