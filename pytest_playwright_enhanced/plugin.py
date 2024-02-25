@@ -94,6 +94,20 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="selenium_grid",
         help="The selenium grid endpoint to distribute tests remotely (experimental)",
     )
+    pwe.addoption(
+        "--download-host",
+        action="store",
+        default=None,
+        dest="download_host",
+        help="The download for binaries, such as an internal artifact repository.",
+    )
+    pwe.addoption(
+        "--drivers-path",
+        action="store",
+        default=None,
+        dest="drivers_path",
+        help="The download path where playwright downloads should store browser binaries.",
+    )
 
 
 @pytest.hookimpl
@@ -112,7 +126,7 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
-@pytest.fixture(scope=FixtureScope.Session)
+@pytest.fixture(scope=FixtureScope.Function)
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
     synchronous path is supported however the plan is to add asynchronous
@@ -158,28 +172,28 @@ def is_firefox(browser_engine: str) -> bool:
     return browser_engine.lower() == BrowserEngine.FIREFOX
 
 
-@pytest.fixture(scope=FixtureScope.Session)
+@pytest.fixture(scope=FixtureScope.Function)
 def root_url(pytestconfig: pytest.Config) -> str:
     """Returns the root url. If provided pages will automatically
     attempt to load this url after creation."""
     return pytestconfig.option.root_url
 
 
-@pytest.fixture(scope=FixtureScope.Session)
+@pytest.fixture(scope=FixtureScope.Function)
 def browser(
-    request: pytest.FixtureRequest,
+    browser_engine: str,
     playwright: pwsync.Playwright,
     browser_arguments: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    browser = getattr(playwright, request.config.option.browser).launch(
+    browser = getattr(playwright, browser_engine).launch(
         **browser_arguments,
     )
     yield browser
     browser.close()
 
 
-@pytest.fixture(scope=FixtureScope.Session)
+@pytest.fixture(scope=FixtureScope.Function)
 def browser_arguments() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.

@@ -40,3 +40,10 @@ Quickly get running by doing the following:
 * `playwright install`
 
 -----
+
+
+## Fixtures
+
+-----
+
+`playwright` - At present this returns the sync `Playwright` instance.

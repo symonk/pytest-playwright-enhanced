@@ -62,3 +62,14 @@ def test_unsupported_browser(pytester: pytest.Pytester) -> None:
         "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'webkit', 'firefox')",
     )
     assert result.ret == pytest.ExitCode.USAGE_ERROR
+
+
+def test_can_launch_browser(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile(
+        """
+        def test_launch_browser(page):
+            page.goto("https://www.google.com")
+""",
+    )
+    result = pytester.runpytest()
+    assert result.assert_outcomes(passed=1)
