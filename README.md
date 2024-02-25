@@ -30,7 +30,7 @@ web applications and APIs. `pytest-playwright-enhanced` plans to offer the follo
 Quickly get running by doing the following:
 
 * `pip install pytest-playwright-enhanced`
-* `playwright install`
+* `pytest <posargs> --acquire-binaries`
 
 -----
 
