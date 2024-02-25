@@ -3,8 +3,8 @@ import typing
 import pytest
 from playwright import sync_api as pwsync
 
-from .const import BrowserName
-from .const import FixtureScopes
+from .const import BrowserEngine
+from .const import FixtureScope
 from .types import ContextKwargs
 
 
@@ -101,7 +101,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 #   * Launch a new (or multiple) page objects from the context.
 
 
-@pytest.fixture(scope=FixtureScopes.Session)
+@pytest.fixture(scope=FixtureScope.Session)
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
     synchronous path is supported however the plan is to add asynchronous
@@ -111,43 +111,43 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
         yield pw
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def browser_engine(pytestconfig: pytest.Config) -> str:
     """Returns the type of browser that will be used."""
     return pytestconfig.option.browser
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def is_chromium(browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a chromium based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserName.CHROMIUM
+    return browser_engine.lower() == BrowserEngine.CHROMIUM
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def is_webkit(browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a webkit based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserName.WEBKIT
+    return browser_engine.lower() == BrowserEngine.WEBKIT
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def is_firefox(browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a firefox based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserName.FIREFOX
+    return browser_engine.lower() == BrowserEngine.FIREFOX
 
 
-@pytest.fixture(scope=FixtureScopes.Session)
+@pytest.fixture(scope=FixtureScope.Session)
 def browser(
     request: pytest.FixtureRequest,
     playwright: pwsync.Playwright,
@@ -161,7 +161,7 @@ def browser(
     browser.close()
 
 
-@pytest.fixture(scope=FixtureScopes.Session)
+@pytest.fixture(scope=FixtureScope.Session)
 def browser_arguments() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
@@ -169,7 +169,7 @@ def browser_arguments() -> ContextKwargs:
     return {}
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def context_arguments() -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance.
@@ -177,7 +177,7 @@ def context_arguments() -> ContextKwargs:
     return {}
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def page(
     pytestconfig: pytest.Config,
     context: pwsync.BrowserContext,
@@ -191,7 +191,7 @@ def page(
     page.close()
 
 
-@pytest.fixture(scope=FixtureScopes.Function)
+@pytest.fixture(scope=FixtureScope.Function)
 def context(
     browser: pwsync.Browser,
     context_arguments: ContextKwargs,

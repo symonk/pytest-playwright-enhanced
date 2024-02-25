@@ -1,12 +1,12 @@
 from enum import Enum
 
 
-class FixtureScopes(str, Enum):
+class FixtureScope(str, Enum):
     Function = "function"
     Session = "session"
 
 
-class BrowserName(str, Enum):
+class BrowserEngine(str, Enum):
     CHROMIUM = "chromium"
     WEBKIT = "webkit"
     FIREFOX = "firefox"
