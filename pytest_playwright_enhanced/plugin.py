@@ -147,13 +147,13 @@ def pytest_configure(config: pytest.Config) -> None:
         os.environ[EnvironmentVars.PWDEBUG] = "console"
         config.add_cleanup(lambda: os.environ.pop(EnvironmentVars.PWDEBUG))
 
-    if driver_download_host := config.option.driver_download_host is not None:
+    if (driver_download_host := config.option.driver_download_host) is not None:
         os.environ[EnvironmentVars.PLAYWRIGHT_DOWNLOAD_HOST] = driver_download_host
         config.add_cleanup(
             lambda: os.environ.pop(EnvironmentVars.PLAYWRIGHT_DOWNLOAD_HOST)
         )
 
-    if driver_path := config.option.driver_path is not None:
+    if (driver_path := config.option.driver_path) is not None:
         os.environ[EnvironmentVars.PLAYWRIGHT_BROWSERS_PATH] = driver_path
         config.add_cleanup(
             lambda: os.environ.pop(EnvironmentVars.PLAYWRIGHT_BROWSERS_PATH)
