@@ -7,6 +7,11 @@
 
 ### pytest-playwright-enhanced
 
+
+> [!CAUTION]
+> `pytest-playwright-enhanced` is in the alpha stage.
+
+
 `pytest-playwright-enhanced` is a batteries included `pytest` plugin for the `playwright` python bindings that 
 offers extended functionality with a focus on removing boilerplate code for projects that wish to test modern 
 web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
@@ -17,11 +22,6 @@ web applications and APIs. `pytest-playwright-enhanced` plans to offer the follo
  * `Asynchronous` support.
  * Custom `hooks` to allow you to plugin and modify behaviour at runtime.
  * Much More...
-
-
-> [!CAUTION]
-> `pytest-playwright-enhanced` is in the alpha stage.
-
 
 -----
 
