@@ -11,4 +11,5 @@ def test_sync_playwright_is_available(pytester: pytest.Pytester) -> None:
 """,
     )
     result = pytester.runpytest()
-    assert result.ret == 0
+    result.assert_outcomes(passed=1)
+    assert not result.ret

@@ -3,6 +3,7 @@ import typing
 import pytest
 from playwright import sync_api as pwsync
 
+from .const import BrowserName
 from .const import FixtureScopes
 from .types import ContextKwargs
 
@@ -11,43 +12,43 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     """Register argparse-style options and ini-style configuration values
     for the plugin.
     """
-    parser.addoption(
+    pwe = parser.getgroup("playwright-enhanced")
+    pwe.addoption(
         "--headed",
         action="store_true",
         default=False,
         dest="headed",
         help="Should tests be ran in headed mode, defaults to headless.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--root-url",
         action="store",
         default=None,
         dest="root_url",
         help="The root url that should be visited when launching a page.",
     )
-    parser.addoption(
+    pwe.addoption(
+        # Todo, allow choices in future.
         "--browser",
-        action="append",
-        default=[],
-        type=list,
+        action="store",
+        default="chromium",
         dest="browser",
         help="The browser engine to use.",
-        choices=["chromium", "webkit", "firefox"],
     )
-    parser.addoption(
+    pwe.addoption(
         "--emulate",
         action="store",
         dest="emulate",
         help="The device to be emulated.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--throttle",
         action="store",
         dest="throttle",
         type=float,
         help="Add arbitrary delay between playwright actions.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--pw-debug-",
         action="store_true",
         default=False,
@@ -55,7 +56,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Allow debugging by forcing `PWDEBUG=console`.",
     )
 
-    parser.addoption(
+    pwe.addoption(
         "--artifacts",
         action="store",
         default="test-artifacts",
@@ -63,28 +64,28 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="The folder name where various artifacts are stored",
     )
 
-    parser.addoption(
+    pwe.addoption(
         "--screenshot-on-fail",
         action="store_false",
         default=True,
         dest="screenshot_on_fail",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--video-on-fail",
         action="store_false",
         default=True,
         dest="video_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--trace-on-fail",
         action="store_false",
         default=True,
         dest="trace_on_fail",
         help="Retain captured trace in the artifacts directory if a test fails.",
     )
-    parser.addoption(
+    pwe.addoption(
         "--selenium-grid",
         action="store",
         default=None,
@@ -111,18 +112,51 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
 
 
 @pytest.fixture(scope=FixtureScopes.Function)
-def browser_type(playwright: pwsync.Playwright) -> pwsync.BrowserType:
-    """Dynamically fetch the browser type for this specific test."""
-    return playwright.browser
+def browser_engine(pytestconfig: pytest.Config) -> str:
+    """Returns the type of browser that will be used."""
+    return pytestconfig.option.browser
+
+
+@pytest.fixture(scope=FixtureScopes.Function)
+def is_chromium(browser_engine: str) -> bool:
+    """Returns true if the running tests will be executed
+    on a chromium based browser.
+
+    :param browser_type: The command line flag value for --browser.
+    """
+    return browser_engine.lower() == BrowserName.CHROMIUM
+
+
+@pytest.fixture(scope=FixtureScopes.Function)
+def is_webkit(browser_engine: str) -> bool:
+    """Returns true if the running tests will be executed
+    on a webkit based browser.
+
+    :param browser_type: The command line flag value for --browser.
+    """
+    return browser_engine.lower() == BrowserName.WEBKIT
+
+
+@pytest.fixture(scope=FixtureScopes.Function)
+def is_firefox(browser_engine: str) -> bool:
+    """Returns true if the running tests will be executed
+    on a firefox based browser.
+
+    :param browser_type: The command line flag value for --browser.
+    """
+    return browser_engine.lower() == BrowserName.FIREFOX
 
 
 @pytest.fixture(scope=FixtureScopes.Session)
 def browser(
+    request: pytest.FixtureRequest,
+    playwright: pwsync.Playwright,
     browser_arguments: ContextKwargs,
-    dynamic_browser_fn: typing.Callable[[], pwsync.Browser],
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    browser = dynamic_browser_fn(**browser_arguments)
+    browser = getattr(playwright, request.config.option.browser).launch(
+        **browser_arguments,
+    )
     yield browser
     browser.close()
 
