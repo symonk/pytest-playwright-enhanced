@@ -48,5 +48,4 @@ def test_driver_download_host_set_if_provided(
             assert "PLAYWRIGHT_DOWNLOAD_HOST" in os.environ
 """
     )
-    result = pytester.runpytest("--download-host", tmp_path)
-    result.assert_outcomes(passed=1)
+    pytester.runpytest("--download-host", tmp_path).assert_outcomes(passed=1)
