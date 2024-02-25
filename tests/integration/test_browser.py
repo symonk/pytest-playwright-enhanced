@@ -54,3 +54,11 @@ def test_is_firefox(pytester: pytest.Pytester) -> None:
     )
     result = pytester.runpytest("--browser", "firefox")
     result.assert_outcomes(passed=1)
+
+
+def test_unsupported_browser(pytester: pytest.Pytester) -> None:
+    result = pytester.runpytest("--browser", "no")
+    result.stderr.fnmatch_lines(
+        "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'webkit', 'firefox')",
+    )
+    assert result.ret == pytest.ExitCode.USAGE_ERROR

@@ -33,6 +33,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store",
         default="chromium",
         dest="browser",
+        choices=(BrowserEngine.CHROMIUM, BrowserEngine.WEBKIT, BrowserEngine.FIREFOX),
         help="The browser engine to use.",
     )
     pwe.addoption(

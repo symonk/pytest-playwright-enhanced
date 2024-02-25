@@ -1,12 +1,13 @@
-from enum import Enum
+from dataclasses import dataclass
 
 
-class FixtureScope(str, Enum):
-    Function = "function"
-    Session = "session"
+@dataclass
+class FixtureScope:
+    Function: str = "function"
+    Session: str = "session"
 
 
-class BrowserEngine(str, Enum):
-    CHROMIUM = "chromium"
-    WEBKIT = "webkit"
-    FIREFOX = "firefox"
+class BrowserEngine:
+    CHROMIUM: str = "chromium"
+    WEBKIT: str = "webkit"
+    FIREFOX: str = "firefox"
