@@ -1,3 +1,4 @@
+import os
 import typing
 
 import pytest
@@ -51,7 +52,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Add arbitrary delay between playwright actions.",
     )
     pwe.addoption(
-        "--pw-debug-",
+        "--pw-debug",
         action="store_true",
         default=False,
         dest="pw_debug",
@@ -138,6 +139,10 @@ def pytest_configure(config: pytest.Config) -> None:
     if config.option.acquire_drivers:
         config.hook.pytest_playwright_acquire_binaries(config=config)
 
+    # conditionally enable console debugging.
+    if config.option.pw_debug:
+        os.environ["PWDEBUG"] = "console"
+
 
 @pytest.hookimpl
 def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
@@ -166,6 +171,12 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """
     with pwsync.sync_playwright() as pw:
         yield pw
+
+
+@pytest.fixture(scope=FixtureScope.Session)
+def is_debugging(pytestconfig: pytest.Config) -> bool:
+    """Returns if the execution is running with PWDEBUG enabled."""
+    return pytestconfig.option.pw_debug
 
 
 @pytest.fixture(scope=FixtureScope.Function)
