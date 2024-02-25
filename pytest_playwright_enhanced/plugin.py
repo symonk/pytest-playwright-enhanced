@@ -8,6 +8,7 @@ from .const import FixtureScope
 from .types import ContextKwargs
 
 
+@pytest.hookimpl
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Register argparse-style options and ini-style configuration values
     for the plugin.
@@ -92,6 +93,22 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         dest="selenium_grid",
         help="The selenium grid endpoint to distribute tests remotely (experimental)",
+    )
+
+
+@pytest.hookimpl
+def pytest_configure(config: pytest.Config) -> None:
+    """Register plugin specific markers for functionality.
+
+    :param config: The pytest `Config` object. (auto injected by pluggy).
+    """
+    config.addinivalue_line(
+        "markers",
+        "page_kwargs: provide additional arguments for new playwright pages",
+    )
+    config.addinivalue_line(
+        "markers",
+        "context_kwargs: provide additional arguments for new playwright contexts",
     )
 
 
