@@ -108,6 +108,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="drivers_path",
         help="The download path where playwright downloads should store browser binaries.",
     )
+    pwe.addoption(
+        "--acquire-drivers",
+        action="store_false",
+        default=True,
+        dest="acquire_drivers",
+        help="Should `pytest-playwright-enhanced` automatically download drivers at runtime for the matching markers.",
+    )
 
 
 @pytest.hookimpl
