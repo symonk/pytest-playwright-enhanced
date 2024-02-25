@@ -22,6 +22,7 @@ API.  Some of the functionality you get for free;
 * Powerful, human readable API's
 * Improved automatic artifacting and debuggability
 * Async support
+* Custom hooks
 * Much more...
 
 `pytest-playwright-enhanced` is a complete drop-in replacement to `pytest-playwright` and is a case of just swapping out the dependency, then utilising

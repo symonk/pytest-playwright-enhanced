@@ -110,8 +110,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
     pwe.addoption(
         "--acquire-drivers",
-        action="store_false",
-        default=True,
+        action="store_true",
+        default=False,
         dest="acquire_drivers",
         help="Should `pytest-playwright-enhanced` automatically download drivers at runtime for the matching markers.",
     )
@@ -120,6 +120,9 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 @pytest.hookimpl
 def pytest_configure(config: pytest.Config) -> None:
     """Register plugin specific markers for functionality.
+    pytest-playwright-enhanced specific hook functionality is
+    registered and invoked as part of the `pytest_configure`
+    workflow.
 
     :param config: The pytest `Config` object. (auto injected by pluggy).
     """
@@ -131,6 +134,26 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "context_kwargs: provide additional arguments for new playwright contexts",
     )
+    config.hook.pytest_playwright_acquire_binaries(config=config)
+
+
+@pytest.hookimpl
+def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
+    """Register new `playwright-pytest-enhanced` specific hooking
+    functionality."""
+    from pytest_playwright_enhanced import hooks as playwright_hooks
+
+    pluginmanager.add_hookspecs(playwright_hooks)
+
+
+@pytest.hookimpl
+def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:
+    """The default implementation for binary acquisition.
+
+    :param config: The `pytest.Config` object. (auto injected).
+    """
+    print("DOWNLOADING BINARIES!")
+    _ = config
 
 
 @pytest.fixture(scope=FixtureScope.Function)

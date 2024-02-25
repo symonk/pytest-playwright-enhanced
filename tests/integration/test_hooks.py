@@ -1,0 +1,11 @@
+import pytest
+
+
+def test_binary_acquire_hook_fires(pytester: pytest.Pytester) -> None:
+    result = pytester.runpytest("--acquire-binaries")
+    result.stdout.no_fnmatch_line(["DOWNLOADING BINARIES!"])
+
+
+def test_binary_acquisition_is_off_by_default(pytester: pytest.Pytester) -> None:
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines(["DOWNLOADING BINARIES!"])
