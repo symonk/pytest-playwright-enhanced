@@ -21,7 +21,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     for the plugin.
     """
     pwe = parser.getgroup(
-        "playwright-enhanced", "Batteries included playwright for pytest."
+        "playwright-enhanced",
+        "Batteries included playwright for pytest.",
     )
     pwe.addoption(
         "--headed",
