@@ -189,6 +189,12 @@ def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
+def headed(pytestconfig: pytest.Config) -> bool:
+    """Returns `True` if the browser is running headed, else `False` if headless."""
+    return pytestconfig.option.headed
+
+
+@pytest.fixture(scope=FixtureScope.Function)
 def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
     synchronous path is supported however the plan is to add asynchronous
