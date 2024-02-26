@@ -5,12 +5,14 @@ import typing
 
 import pytest
 from playwright import sync_api as pwsync
+from playwright._impl._driver import get_driver_env
 
 from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
 from .utils import register_env_defer
+from .utils import safe_to_run_plugin
 
 
 @pytest.hookimpl
@@ -18,7 +20,9 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     """Register argparse-style options and ini-style configuration values
     for the plugin.
     """
-    pwe = parser.getgroup("playwright-enhanced")
+    pwe = parser.getgroup(
+        "playwright-enhanced", "Batteries included playwright for pytest."
+    )
     pwe.addoption(
         "--headed",
         action="store_true",
@@ -115,10 +119,11 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
     pwe.addoption(
         "--acquire-drivers",
-        action="store_true",
-        default=False,
+        action="store",
+        default="no",
         dest="acquire_drivers",
-        help="Should `pytest-playwright-enhanced` automatically download drivers at runtime for the matching markers.",
+        choices=("yes", "no", "with-deps"),
+        help="Should playwright enhanced auto acquire driver binaries.",
     )
 
 
@@ -131,6 +136,11 @@ def pytest_configure(config: pytest.Config) -> None:
 
     :param config: The pytest `Config` object. (auto injected by pluggy).
     """
+
+    # skip this plugin entirely when performing collection.
+    if not safe_to_run_plugin(config):
+        return
+
     config.addinivalue_line(
         "markers",
         "page_kwargs: provide additional arguments for new playwright pages",
@@ -140,9 +150,17 @@ def pytest_configure(config: pytest.Config) -> None:
         "context_kwargs: provide additional arguments for new playwright contexts",
     )
     # conditionally invoke the acquire binaries hook.
-    if config.option.acquire_drivers:
+    if config.option.acquire_drivers != "no":
         _ = config.hook.pytest_playwright_acquire_binaries(config=config)
+    prepare_environment(config)
 
+
+def prepare_environment(config: pytest.Config) -> None:
+    """Prepare various environment variables based on the runtime
+    configuration.
+
+    :param config: The pytest.Config object.
+    """
     if config.option.pw_debug:
         os.environ[EnvironmentVars.PWDEBUG] = "console"
         config.add_cleanup(lambda: os.environ.pop(EnvironmentVars.PWDEBUG))
@@ -168,24 +186,23 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
 
 
 @pytest.hookimpl(trylast=True)
-def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:
+def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:  # noqa: ARG001
     """The default implementation for binary acquisition.
 
     :param config: The `pytest.Config` object. (auto injected).
 
-    # Todo: This is a dummy implementation and needs some love.
     """
-    print("DOWNLOADED BINARIES")
-    _ = config
-    return None
+    proc_args = ("playwright", "install", "--with-deps")
     completed_process = subprocess.run(
-        ["playwright", "install"],
+        args=proc_args,
+        env=get_driver_env(),
         capture_output=True,
         check=False,
     )
     if completed_process.returncode:
         raise pytest.UsageError("Problem downloading playwright driver binaries!")
-    return pathlib.Path()
+    # Todo: implement.
+    return pathlib.Path(__file__)
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -290,8 +307,7 @@ def page(
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
     page = context.new_page()
-    base_url = pytestconfig.option.base_url
-    if base_url is not None:
+    if (base_url := pytestconfig.option.root_url) is not None:
         page.goto(base_url)
     yield page
     page.close()

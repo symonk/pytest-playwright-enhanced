@@ -14,3 +14,15 @@ def register_env_defer(var: str, val: str, config: pytest.Config) -> None:
     os.environ[var] = val
     callback = lambda: os.environ.pop(var)
     config.add_cleanup(callback)
+
+
+def safe_to_run_plugin(config: pytest.Config) -> bool:
+    """Return whether it is safe to execute plugin code, otherwise
+    the plugin should be avoided to prevent unnecessary side effects."""
+    if config.option.help:
+        return False
+    if config.option.showfixtures:
+        return False
+    if config.option.collectonly:
+        return False
+    return True

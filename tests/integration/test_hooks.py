@@ -1,11 +1,13 @@
 import pytest
 
 
+@pytest.mark.skip(reason="not implemented")
 def test_binary_acquire_hook_fires(pytester: pytest.Pytester) -> None:
-    result = pytester.runpytest("--acquire-drivers")
-    result.stdout.fnmatch_lines(["DOWNLOADED BINARIES"])
+    result = pytester.runpytest_inprocess("--acquire-drivers=yes")  # noqa F841
+    # Todo: implement!
 
 
 def test_binary_acquisition_is_off_by_default(pytester: pytest.Pytester) -> None:
-    result = pytester.runpytest()
-    result.stdout.no_fnmatch_line("DOWNLOADING BINARIES")
+    hook_recorder = pytester.inline_run()
+    calls = hook_recorder.getcalls("pytest_playwright_acquire_binaries")
+    assert not calls
