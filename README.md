@@ -23,6 +23,9 @@ web applications and APIs. `pytest-playwright-enhanced` plans to offer the follo
  * Custom `hooks` to allow you to plugin and modify behaviour at runtime.
  * Much More...
 
+ `pytest-playwright-enhanced` is currently implementing core plugin functionality, the main enhancements
+ will follow shortly.
+
 -----
 
 ## Quick Start
@@ -30,7 +33,7 @@ web applications and APIs. `pytest-playwright-enhanced` plans to offer the follo
 Quickly get running by doing the following:
 
 * `pip install pytest-playwright-enhanced`
-* `pytest <posargs> --acquire-binaries`
+* `pytest <posargs> --acquire-binaries=with-deps`
 
 -----
 
