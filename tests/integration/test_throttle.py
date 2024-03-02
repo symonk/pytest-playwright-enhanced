@@ -19,7 +19,7 @@ def test_default_throttle_is_zero(pytester: pytest.Pytester) -> None:
     result.assert_outcomes(passed=1)
 
 
-@pytest.mark.skip("not implemented yet!")
+@pytest.mark.skip()
 def test_per_test_throttle(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         import pytest

@@ -42,9 +42,20 @@ Quickly get running by doing the following:
 
 -----
 
-`playwright` - At present this returns the sync `Playwright` instance.
-`pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
-
+ * `playwright` - At present this returns the sync `Playwright` instance.
+ * `pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
+ * `pw_headed` - Returns if the browser is running headlessly or not.
+ * `pw_throttle` - Returns the currently throttle in milliseconds, defaults to `0`.
+ * `is_chromium` - Returns if the current browser is chromium.
+ * `is_webkit` - Returns if the current browser is webkit.
+ * `is_firefox` - Returns if the current browser is firefox.
+ * `pw_root_url` - Returns the base url auto loaded by `Page` objects.
+ * `pw_browser` - Returns the current `Browser` instance.
+ * `pw_context_arguments` - An overridable fixture to control arguments to playwright `Context` instances.
+ * `pw_page` - Returns a new `Page` instance.
+ * `pw_is_debugging` - Returns if playwright will be using `PW_DEBUG` mode.
+ * `pw_browser_arguments` - An overridable fixture to control arguments to playwright `Browser
+nstances.
 
 -----
 

@@ -258,7 +258,7 @@ def pw_multi_browser() -> None:  # noqa: PT004
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def headed(pytestconfig: pytest.Config) -> bool:
+def pw_headed(pytestconfig: pytest.Config) -> bool:
     """Returns `True` if the browser is running headed, else `False` if headless."""
     return pytestconfig.option.headed
 
