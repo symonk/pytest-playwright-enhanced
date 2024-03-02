@@ -58,6 +58,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store",
         dest="throttle",
         type=float,
+        default=0.0,
         help="Add arbitrary delay between playwright actions.",
     )
     pwe.addoption(
@@ -210,6 +211,14 @@ def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:  # noqa: 
 def headed(pytestconfig: pytest.Config) -> bool:
     """Returns `True` if the browser is running headed, else `False` if headless."""
     return pytestconfig.option.headed
+
+
+@pytest.fixture(scope=FixtureScope.Function)
+def pw_throttle(pytestconfig: pytest.Config) -> int:
+    """Returns the global throttle for all actions, defaults to `0`."""
+    # We need to inspect the context_kwargs for all overridable things
+    # to yield a correct per-test value.
+    return pytestconfig.option.throttle
 
 
 @pytest.fixture(scope=FixtureScope.Function)
