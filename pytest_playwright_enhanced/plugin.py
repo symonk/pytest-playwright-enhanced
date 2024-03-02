@@ -223,10 +223,10 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     node = metafunc.definition.name
     if "pw_multi_browser" in metafunc.fixturenames:
         # tuple is important here to guarantee order in tests.
-        allowed_engines = ("chromium", "webkit", "firefox")
+        allowed_engines = tuple(metafunc.config.option.browser)
         for marker in metafunc.definition.iter_markers():
             if marker.name == "pw_only_on_browsers":
-                engines = {m.lower() for m in marker.args}
+                engines = tuple(m.lower() for m in marker.args)
                 if any(b not in allowed_engines for b in engines):
                     # The user has marked a test with (case insensitive) invalid browser value(s).
                     err_msg = f"Unsupported browser in pw_only_browsers in {node}, supported_engines are={allowed_engines}"
@@ -237,7 +237,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
                     raise pytest.UsageError(err_msg)
                 # We have a valid setup for multi browser based testing.
                 allowed_engines = engines
-        metafunc.parametrize("pw_multi_browser", allowed_engines)
+        metafunc.parametrize(argnames="pw_multi_browser", argvalues=allowed_engines)
 
     # Todo: Consider warning/raising a usage error if using the markers without the multi_browser fixture
     # Tho this is a costly marker iteration process, for now just do checks if fixture is used for multi.
@@ -288,9 +288,21 @@ def is_debugging(pytestconfig: pytest.Config) -> bool:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def browser_engine(pytestconfig: pytest.Config) -> list[str]:
+def browser_engine(pytestconfig: pytest.Config, pw_multi_browser: None | str) -> str:
     """Return all the browsers provided by the user."""
-    return pytestconfig.option.browser or ["chromium"]
+    # Attempt to get the multi browser call for this particular node.
+    # It is not a parameterised test, what is the single browser provided.
+    if pw_multi_browser is not None:
+        return pw_multi_browser
+    options = pytestconfig.option.browser
+    if options is None:
+        return "chromium"
+    if len(options) == 1:
+        return options[0]
+    # clearly missing test coverage - possibly odd scenarios that can lead to this? - not sure yet.
+    raise ValueError(
+        "pytest-playwright-enhanced was unable to derive the browser engine - please raise a ticket there."
+    )
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -300,7 +312,7 @@ def is_chromium(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return BrowserEngine.CHROMIUM in browser_engine
+    return browser_engine == BrowserEngine.CHROMIUM
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -310,7 +322,7 @@ def is_webkit(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return BrowserEngine.WEBKIT in browser_engine
+    return browser_engine == BrowserEngine.WEBKIT
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -320,7 +332,7 @@ def is_firefox(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return BrowserEngine.FIREFOX in browser_engine
+    return browser_engine == BrowserEngine.FIREFOX
 
 
 @pytest.fixture(scope=FixtureScope.Function)

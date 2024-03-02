@@ -41,7 +41,7 @@ def test_unsupported_browser_in_only_runs_on(pytester: pytest.Pytester) -> None:
     )
     result.assert_outcomes(errors=1)
     assert result.ret == pytest.ExitCode.INTERRUPTED
-    err = "*UsageError: Unsupported browser in pw_only_browsers in test_unsupported_only_on_browsers, supported_engines are=('chromium', 'webkit', 'firefox')*"
+    err = "*UsageError: Unsupported browser in pw_only_browsers in test_unsupported_only_on_browsers, supported_engines are=('chromium', 'firefox', 'webkit')*"
     result.stdout.fnmatch_lines([err])
 
 
@@ -59,3 +59,18 @@ def test_removing_all_browsers_raises_usage_error(pytester: pytest.Pytester) -> 
     assert result.ret == pytest.ExitCode.INTERRUPTED
     err = "*UsageError: @pytest.mark.pw_only_on_browsers has no values on test: test_no_browsers_with_only_on."
     result.stdout.fnmatch_lines([err])
+
+
+@pytest.mark.parametrize("engine", ["chromium", "firefox", "webkit"])
+def test_browser_engine_fixture_is_accurate(
+    pytester: pytest.Pytester, engine: str
+) -> None:
+    pytester.makepyfile(f"""
+        import pytest
+
+        def test_accurate_browser_engine(pw_multi_browser, browser_engine):
+            assert pw_multi_browser == "{engine}"
+            assert browser_engine == "{engine}"
+""")
+    result = pytester.runpytest("--browser", engine)
+    result.assert_outcomes(passed=1)
