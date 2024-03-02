@@ -19,12 +19,12 @@ def test_default_throttle_is_zero(pytester: pytest.Pytester) -> None:
     result.assert_outcomes(passed=1)
 
 
-def test_per_test_throttle(pytester: pytest.Pytester) -> None:
+def test_throttle_can_be_set_on_a_test_level(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         import pytest
         import time
 
-        @pytest.mark.context_args({'throttle': 1000})
+        @pytest.mark.context_kwargs({'throttle': 1000})
         def test_throttle_override_per_test(pw_page, pw_throttle):
             now = int(time.now())
             pw_page.goto('https://www.google.com')
