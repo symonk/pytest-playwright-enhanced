@@ -4,8 +4,8 @@ import pytest
 def test_root_url_default(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
-        def test_root_url(root_url):
-            assert root_url is None
+        def test_root_url(pw_root_url):
+            assert pw_root_url is None
     """,
     )
     result = pytester.runpytest()
@@ -17,8 +17,8 @@ def test_root_url_override(pytester: pytest.Pytester) -> None:
     url = "https://www.google.com"
     pytester.makepyfile(
         f"""
-        def test_root_url(root_url):
-            assert root_url == '{url}'
+        def test_root_url(pw_root_url):
+            assert pw_root_url == '{url}'
     """,
     )
     result = pytester.runpytest("--root-url", url)
@@ -32,11 +32,11 @@ def test_root_url_can_be_override_in_user_space(pytester: pytest.Pytester) -> No
         import pytest
 
         @pytest.fixture(scope="session")
-        def root_url():
+        def pw_root_url():
             return "https://www.google.com"
 
-        def test_override_root_url(root_url):
-            assert root_url == "https://www.google.com"
+        def test_override_root_url(pw_root_url):
+            assert pw_root_url == "https://www.google.com"
 
     """,
     )

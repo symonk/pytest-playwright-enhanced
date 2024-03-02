@@ -51,10 +51,11 @@ Quickly get running by doing the following:
  * `is_firefox` - Returns if the current browser is firefox.
  * `pw_root_url` - Returns the base url auto loaded by `Page` objects.
  * `pw_browser` - Returns the current `Browser` instance.
- * `pw_context_arguments` - An overridable fixture to control arguments to playwright `Context` instances.
+ * `pw_browser_engine` - A string representing the type of browser for this test.
+ * `pw_context_args` - An overridable fixture to control arguments to playwright `Context` instances.
  * `pw_page` - Returns a new `Page` instance.
  * `pw_is_debugging` - Returns if playwright will be using `PW_DEBUG` mode.
- * `pw_browser_arguments` - An overridable fixture to control arguments to playwright `Browser
+ * `pw_browser_args` - An overridable fixture to control arguments to playwright `Browser
 nstances.
 
 -----

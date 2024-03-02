@@ -8,8 +8,8 @@ def test_browser_type_fixture_is_correct(
 ) -> None:
     pytester.makepyfile(
         f"""
-        def test_browser_type(browser_engine):
-            assert '{browser_type}' == browser_engine
+        def test_browser_type(pw_browser_engine):
+            assert '{browser_type}' == pw_browser_engine
 """,
     )
     result = pytester.runpytest("--browser", browser_type)
@@ -20,10 +20,10 @@ def test_browser_type_fixture_is_correct(
 def test_is_chromium(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
-        def test_is_chromium_foo(is_chromium, is_webkit, is_firefox):
-            assert is_chromium
-            assert not is_webkit
-            assert not is_firefox
+        def test_is_chromium_foo(pw_is_chromium, pw_is_webkit, pw_is_firefox):
+            assert pw_is_chromium
+            assert not pw_is_webkit
+            assert not pw_is_firefox
 """,
     )
     result = pytester.runpytest("--browser", "chromium")
@@ -33,10 +33,10 @@ def test_is_chromium(pytester: pytest.Pytester) -> None:
 def test_is_webkit(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
-        def test_is_webkit(is_chromium, is_webkit, is_firefox):
-            assert not is_chromium
-            assert is_webkit
-            assert not is_firefox
+        def test_is_webkit(pw_is_chromium, pw_is_webkit, pw_is_firefox):
+            assert not pw_is_chromium
+            assert pw_is_webkit
+            assert not pw_is_firefox
 """,
     )
     result = pytester.runpytest("--browser", "webkit")
@@ -46,10 +46,10 @@ def test_is_webkit(pytester: pytest.Pytester) -> None:
 def test_is_firefox(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
-        def test_is_firefox(is_chromium, is_webkit, is_firefox):
-            assert not is_chromium
-            assert not is_webkit
-            assert is_firefox
+        def test_is_firefox(pw_is_chromium, pw_is_webkit, pw_is_firefox):
+            assert not pw_is_chromium
+            assert not pw_is_webkit
+            assert pw_is_firefox
 """,
     )
     result = pytester.runpytest("--browser", "firefox")

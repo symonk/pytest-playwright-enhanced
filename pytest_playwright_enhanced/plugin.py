@@ -58,8 +58,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--throttle",
         action="store",
         dest="throttle",
-        type=float,
-        default=0.0,
+        type=int,
+        default=0,
         help="Add arbitrary delay between playwright actions.",
     )
     pwe.addoption(
@@ -282,13 +282,13 @@ def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
 
 
 @pytest.fixture(scope=FixtureScope.Session)
-def is_debugging(pytestconfig: pytest.Config) -> bool:
+def pw_is_debugging(pytestconfig: pytest.Config) -> bool:
     """Returns if the execution is running with PWDEBUG enabled."""
     return pytestconfig.option.pw_debug
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def browser_engine(pytestconfig: pytest.Config, pw_multi_browser: None | str) -> str:
+def pw_browser_engine(pytestconfig: pytest.Config, pw_multi_browser: None | str) -> str:
     """Return all the browsers provided by the user."""
     # Attempt to get the multi browser call for this particular node.
     # It is not a parameterised test, what is the single browser provided.
@@ -306,58 +306,58 @@ def browser_engine(pytestconfig: pytest.Config, pw_multi_browser: None | str) ->
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def is_chromium(browser_engine: str) -> bool:
+def pw_is_chromium(pw_browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a chromium based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine == BrowserEngine.CHROMIUM
+    return pw_browser_engine == BrowserEngine.CHROMIUM
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def is_webkit(browser_engine: str) -> bool:
+def pw_is_webkit(pw_browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a webkit based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine == BrowserEngine.WEBKIT
+    return pw_browser_engine == BrowserEngine.WEBKIT
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def is_firefox(browser_engine: str) -> bool:
+def pw_is_firefox(pw_browser_engine: str) -> bool:
     """Returns true if the running tests will be executed
     on a firefox based browser.
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine == BrowserEngine.FIREFOX
+    return pw_browser_engine == BrowserEngine.FIREFOX
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def root_url(pytestconfig: pytest.Config) -> str:
+def pw_root_url(pytestconfig: pytest.Config) -> str:
     """Returns the root url. If provided pages will automatically
     attempt to load this url after creation."""
     return pytestconfig.option.root_url
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def browser(
-    browser_engine: str,
+def pw_browser(
+    pw_browser_engine: str,
     playwright: pwsync.Playwright,
-    browser_arguments: ContextKwargs,
+    pw_browser_args: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    browser = getattr(playwright, browser_engine).launch(
-        **browser_arguments,
+    browser = getattr(playwright, pw_browser_engine).launch(
+        **pw_browser_args,
     )
     yield browser
     browser.close()
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def browser_arguments() -> ContextKwargs:
+def pw_browser_args() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
     """
@@ -365,7 +365,7 @@ def browser_arguments() -> ContextKwargs:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def context_arguments() -> ContextKwargs:
+def pw_context_args() -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance.
     """
@@ -373,12 +373,12 @@ def context_arguments() -> ContextKwargs:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def page(
+def pw_page(
     pytestconfig: pytest.Config,
-    context: pwsync.BrowserContext,
+    pw_context: pwsync.BrowserContext,
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
-    page = context.new_page()
+    page = pw_context.new_page()
     if (base_url := pytestconfig.option.root_url) is not None:
         page.goto(base_url)
     yield page
@@ -386,12 +386,12 @@ def page(
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def context(
-    browser: pwsync.Browser,
-    context_arguments: ContextKwargs,
+def pw_context(
+    pw_browser: pwsync.Browser,
+    pw_context_args: ContextKwargs,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
-    context = browser.new_context(**context_arguments)
+    context = pw_browser.new_context(**pw_context_args)
     yield context
     context.close()
 

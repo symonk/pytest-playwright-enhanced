@@ -4,16 +4,16 @@ import pytest
 def test_global_throttle_is_applied(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         def test_throttle_global(pw_throttle):
-            assert pw_throttle == 10.25
+            assert pw_throttle == 10
 """)
-    result = pytester.runpytest("--throttle", "10.25")
+    result = pytester.runpytest("--throttle", "10")
     result.assert_outcomes(passed=1)
 
 
 def test_default_throttle_is_zero(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         def test_throttle_global(pw_throttle):
-            assert pw_throttle == 0.0
+            assert pw_throttle == 0
 """)
     result = pytester.runpytest()
     result.assert_outcomes(passed=1)
@@ -26,9 +26,9 @@ def test_per_test_throttle(pytester: pytest.Pytester) -> None:
         import time
 
         @pytest.mark.context_kwargs({'throttle': 1000})
-        def test_throttle_override_per_test(page, pw_throttle):
+        def test_throttle_override_per_test(pw_page, pw_throttle):
             now = int(time.now())
-            page.goto('https://www.google.com')
+            pw_page.goto('https://www.google.com')
             since = int(time.time()) - now
             assert since > pw_throttle
 """)

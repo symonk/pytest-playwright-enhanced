@@ -73,9 +73,9 @@ def test_browser_engine_fixture_is_accurate(
     pytester.makepyfile(f"""
         import pytest
 
-        def test_accurate_browser_engine(pw_multi_browser, browser_engine):
+        def test_accurate_browser_engine(pw_multi_browser, pw_browser_engine):
             assert pw_multi_browser == "{engine}"
-            assert browser_engine == "{engine}"
+            assert pw_browser_engine == "{engine}"
 """)
     result = pytester.runpytest("--browser", engine)
     result.assert_outcomes(passed=1)
