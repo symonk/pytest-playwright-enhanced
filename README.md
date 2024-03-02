@@ -74,6 +74,8 @@ nstances.
 
 ## Markers
 
-`pytest.mark.only_on_browsers` - Only run on a subset of browsers when using the `pw_multi_browser` fixture.
+`@pytest.mark.only_on_browsers` - Only run on a subset of browsers when using the `pw_multi_browser` fixture.
+`@pytest.mark.context_kwargs` - Per test level overrides to the `context` object.
+`@pytest.mark.browser_kwargs` - Per test level overrides to the `browser` object.
 
 ----- 
