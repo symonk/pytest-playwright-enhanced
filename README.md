@@ -26,6 +26,10 @@ web applications and APIs. `pytest-playwright-enhanced` plans to offer the follo
  `pytest-playwright-enhanced` is currently implementing core plugin functionality, the main enhancements
  will follow shortly.
 
+ `pytest-playwright-enhanced` right now treats `browsers`, `contexts` and `pages` at a `function` level.  This allows
+ easily _per test overrides_ at the small cost of slightly less performance creating browsers, for now it is worth it
+ as it offers much more flexibility and user defined configurations.
+
 -----
 
 ## Quick Start
