@@ -291,7 +291,7 @@ def pw_slow_mo(request: pytest.FixtureRequest, pytestconfig: pytest.Config) -> i
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def playwright() -> typing.Generator[pwsync.Playwright, None, None]:
+def pw_playwright() -> typing.Generator[pwsync.Playwright, None, None]:
     """Launch the core playwright context manager, at present only a
     synchronous path is supported however the plan is to add asynchronous
     support in future.
@@ -364,11 +364,11 @@ def pw_root_url(pytestconfig: pytest.Config) -> str:
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_browser(
     pw_browser_engine: str,
-    playwright: pwsync.Playwright,
+    pw_playwright: pwsync.Playwright,
     pw_browser_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    browser = getattr(playwright, pw_browser_engine).launch(
+    browser = getattr(pw_playwright, pw_browser_engine).launch(
         **pw_browser_kwargs,
     )
     yield browser

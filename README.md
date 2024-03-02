@@ -46,7 +46,7 @@ Quickly get running by doing the following:
 
 -----
 
- * `playwright` - At present this returns the sync `Playwright` instance.
+ * `pw_playwright` - At present this returns the sync `Playwright` instance.
  * `pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
  * `pw_headed` - Returns if the browser is running headlessly or not.
  * `pw_slow_mo` - Returns the currently throttle in milliseconds, defaults to `0`.
@@ -74,8 +74,8 @@ nstances.
 
 ## Markers
 
-`@pytest.mark.only_on_browsers` - Only run on a subset of browsers when using the `pw_multi_browser` fixture.
-`@pytest.mark.context_kwargs` - Per test level overrides to the `context` object.
-`@pytest.mark.browser_kwargs` - Per test level overrides to the `browser` object.
+ - `@pytest.mark.only_on_browsers` - Only run on a subset of browsers when using the `pw_multi_browser` fixture.
+ - `@pytest.mark.context_kwargs` - Per test level overrides to the `context` object.
+ - `@pytest.mark.browser_kwargs` - Per test level overrides to the `browser` object.
 
 ----- 
