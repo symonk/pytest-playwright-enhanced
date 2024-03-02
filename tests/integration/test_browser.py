@@ -1,19 +1,6 @@
 import pytest
 
 
-@pytest.mark.skip("iterating browsers is half baked now")
-def test_running_multiple_browsers_parameterized(pytester: pytest.Pytester) -> None:
-    pytester.makepyfile("""
-    def test_basic_browsers():
-        assert True
-""")
-    result = pytester.runpytest(
-        "--browser", "chromium", "--browser", "firefox", "--browser", "webkit"
-    )
-    result.assert_outcomes(passed=3)
-    assert result.ret == pytest.ExitCode.OK
-
-
 @pytest.mark.parametrize("browser_type", ["chromium", "webkit", "firefox"])
 def test_browser_type_fixture_is_correct(
     pytester: pytest.Pytester,
@@ -22,7 +9,7 @@ def test_browser_type_fixture_is_correct(
     pytester.makepyfile(
         f"""
         def test_browser_type(browser_engine):
-            assert browser_engine == '{browser_type}'
+            assert '{browser_type}' == browser_engine[0]
 """,
     )
     result = pytester.runpytest("--browser", browser_type)
@@ -75,33 +62,3 @@ def test_unsupported_browser(pytester: pytest.Pytester) -> None:
         "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'webkit', 'firefox')",
     )
     assert result.ret == pytest.ExitCode.USAGE_ERROR
-
-
-@pytest.mark.skip("browser cannot be iterated yet")
-def test_only_on_works_correctly(pytester: pytest.Pytester) -> None:
-    pytester.makepyfile("""
-        import pytest
-
-        @pytest.mark.only_on_browser("chromium")
-        def test_on_chrome(page):
-            ...
-""")
-    result = pytester.runpytest("--browser", "firefox")
-    result.assert_outcomes(skipped=1, passed=0)
-    assert result.ret == pytest.ExitCode.OK
-
-
-@pytest.mark.skip("browser cannot be iterated yet")
-def test_ignore_on_works_correctly(pytester: pytest.Pytester) -> None:
-    pytester.makepyfile("""
-        import pytest
-
-        @pytest.mark.ignore_on_browser("chromium")
-        def test_on_chrome(page):
-            ...
-""")
-    result = pytester.runpytest("--browser", "chromium", "--browser", "webkit")
-    result.assert_outcomes(skipped=1)
-
-
-# Todo: --browser should be able to iterate tests with multiple browsers

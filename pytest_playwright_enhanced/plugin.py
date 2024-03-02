@@ -146,12 +146,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
     # Avoid spurious warnings by registering plugin specific markers.
     config.addinivalue_line(
-        "markers",
-        "ignore_on_browser(name): mark particular tests to not run on these browsers.",
-    )
-    config.addinivalue_line(
-        "markers",
-        "only_on_browsers(name): mark particular tests to only run on a subset of these browsers.",
+        "markers", "pw_only_on_browsers(name): Opt in browsers to iterate a test on."
     )
     config.addinivalue_line(
         "markers",
@@ -225,21 +220,41 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
 
     These markers impact generated tests.
     """
-    options = metafunc.config.option.browser
-    if "page" in metafunc.fixturenames or "context" in metafunc.fixturenames:
-        # Apply the logic here; we do not want to iterate tests not using the plugin
-        # users may have other tests involved, such as API tests etc, do not automatically
-        # parameterize everything!
-        allowed_browsers = set()
-        _ = allowed_browsers
+    node = metafunc.definition.name
+    if "pw_multi_browser" in metafunc.fixturenames:
+        # tuple is important here to guarantee order in tests.
+        allowed_engines = ("chromium", "webkit", "firefox")
         for marker in metafunc.definition.iter_markers():
-            if marker.name == "only_on_browsers":
-                options = list(marker.args)
-                break
-            if marker.name == "ignore_on_browsers":
-                ...
-    # Todo: Finish this core implementation!
-    _ = options
+            if marker.name == "pw_only_on_browsers":
+                engines = {m.lower() for m in marker.args}
+                if any(b not in allowed_engines for b in engines):
+                    # The user has marked a test with (case insensitive) invalid browser value(s).
+                    err_msg = f"Unsupported browser in pw_only_browsers in {node}, supported_engines are={allowed_engines}"
+                    raise pytest.UsageError(err_msg)
+                if not engines:
+                    # The user has used an empty @pytest.mark.pw_only_on_browsers() marker
+                    err_msg = f"@pytest.mark.pw_only_on_browsers has no values on test: {node}."
+                    raise pytest.UsageError(err_msg)
+                # We have a valid setup for multi browser based testing.
+                allowed_engines = engines
+        metafunc.parametrize("pw_multi_browser", allowed_engines)
+
+    # Todo: Consider warning/raising a usage error if using the markers without the multi_browser fixture
+    # Tho this is a costly marker iteration process, for now just do checks if fixture is used for multi.
+
+
+@pytest.fixture(scope=FixtureScope.Function)
+def pw_multi_browser() -> None:  # noqa: PT004
+    """implicitly parameterizes a test function to run across all three supported
+    browsers.  Any test utilising this fixture will be executed 3 times (depending)
+    on the markers for only/ignore on certain browsers.
+
+    param pytestconfig: The `pytest.Config` object.
+
+    Returns the currently running browser engine name for the test.
+
+    This is a `meta` fixture and is used/setup properly via the `pytest_generate_tests` hook.
+    """
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -275,7 +290,7 @@ def is_debugging(pytestconfig: pytest.Config) -> bool:
 @pytest.fixture(scope=FixtureScope.Function)
 def browser_engine(pytestconfig: pytest.Config) -> list[str]:
     """Return all the browsers provided by the user."""
-    return pytestconfig.option.browser
+    return pytestconfig.option.browser or ["chromium"]
 
 
 @pytest.fixture(scope=FixtureScope.Function)

@@ -3,6 +3,7 @@ import pathlib
 import pytest
 
 
+@pytest.mark.skip(reason="this is set in conftest.py globally now for test purposes")
 def test_driver_path_not_set_if_omitted(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """

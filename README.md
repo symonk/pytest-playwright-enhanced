@@ -43,6 +43,7 @@ Quickly get running by doing the following:
 -----
 
 `playwright` - At present this returns the sync `Playwright` instance.
+`pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
 
 
 -----
@@ -51,3 +52,12 @@ Quickly get running by doing the following:
 ## Hooks
 
 `pytest_playwright_acquire_binaries` - Hook in and customise binary acquisition at runtime.
+
+
+-----
+
+## Markers
+
+`pytest.mark.only_on_browsers` - Only run on a subset of browsers when using the `pw_multi_browser` fixture.
+
+----- 
