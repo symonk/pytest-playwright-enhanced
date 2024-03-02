@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import os
+from typing import Any
 
 import pytest
 
@@ -26,3 +29,17 @@ def safe_to_run_plugin(config: pytest.Config) -> bool:
     if config.option.collectonly:
         return False
     return True
+
+
+def parse_browser_kwargs_from_node(
+    item: pytest.Item, default: dict[str, Any]
+) -> dict[str, Any]:
+    """Given a test node item, return the parsed marker
+    overrides specified for the playwright `Browser` instance.
+
+    :param item: The `pytest.Item` for the executing test.
+    """
+    browser_kwargs = item.get_closest_marker("browser_kwargs")
+    if browser_kwargs is None:
+        return default
+    return browser_kwargs.kwargs.get("config", default)

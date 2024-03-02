@@ -46,7 +46,7 @@ def test_unsupported_browser_in_only_runs_on(pytester: pytest.Pytester) -> None:
     )
     result.assert_outcomes(errors=1)
     assert result.ret == pytest.ExitCode.INTERRUPTED
-    err = "*UsageError: Unsupported browser in pw_only_browsers in test_unsupported_only_on_browsers, supported_engines are=('chromium', 'firefox', 'webkit')*"
+    err = "*UsageError: Unsupported browser in pw_only_on_browsers in test_unsupported_only_on_browsers, supported_engines are=('chromium', 'firefox', 'webkit')*"
     result.stdout.fnmatch_lines([err])
 
 

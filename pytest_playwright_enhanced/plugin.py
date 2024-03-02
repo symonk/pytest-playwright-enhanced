@@ -13,6 +13,7 @@ from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
+from .utils import parse_browser_kwargs_from_node
 from .utils import register_env_defer
 from .utils import safe_to_run_plugin
 
@@ -55,9 +56,9 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="The device to be emulated.",
     )
     pwe.addoption(
-        "--throttle",
+        "--slow-mo",
         action="store",
-        dest="throttle",
+        dest="slow_mo",
         type=int,
         default=0,
         help="Add arbitrary delay between playwright actions.",
@@ -150,12 +151,26 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     config.addinivalue_line(
         "markers",
-        "context_kwargs: provide additional arguments for new playwright contexts",
+        "context_kwargs: provide additional arguments for new playwright contexts.",
+    )
+    config.addinivalue_line(
+        "markers",
+        "browser_kwargs: provide additional arguments for new playwright browsers.",
     )
     # conditionally invoke the acquire binaries hook.
     if config.option.acquire_drivers != "no":
         _ = config.hook.pytest_playwright_acquire_binaries(config=config)
     prepare_environment(config)
+
+
+class PlaywrightEnhancedPlugin:
+    """The core playwright enhanced plugin."""
+
+    def __init__(
+        self: typing.SelfType,
+        config: pytest.Config,
+    ) -> None:
+        self.config = config
 
 
 def prepare_environment(config: pytest.Config) -> None:
@@ -220,16 +235,18 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
 
     These markers impact generated tests.
     """
+    if not safe_to_run_plugin(metafunc.config):
+        return
     node = metafunc.definition.name
     if "pw_multi_browser" in metafunc.fixturenames:
         # tuple is important here to guarantee order in tests.
-        allowed_engines = tuple(metafunc.config.option.browser)
+        allowed_engines = tuple(metafunc.config.option.browser) or ("chromium",)
         for marker in metafunc.definition.iter_markers():
             if marker.name == "pw_only_on_browsers":
                 engines = tuple(m.lower() for m in marker.args)
                 if any(b not in allowed_engines for b in engines):
                     # The user has marked a test with (case insensitive) invalid browser value(s).
-                    err_msg = f"Unsupported browser in pw_only_browsers in {node}, supported_engines are={allowed_engines}"
+                    err_msg = f"Unsupported browser in pw_only_on_browsers in {node}, supported_engines are={allowed_engines}"
                     raise pytest.UsageError(err_msg)
                 if not engines:
                     # The user has used an empty @pytest.mark.pw_only_on_browsers() marker
@@ -264,11 +281,13 @@ def pw_headed(pytestconfig: pytest.Config) -> bool:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_throttle(pytestconfig: pytest.Config) -> int:
-    """Returns the global throttle for all actions, defaults to `0`."""
+def pw_slow_mo(request: pytest.FixtureRequest, pytestconfig: pytest.Config) -> int:
+    """Returns the global slow_mofor all actions, defaults to `0`."""
     # We need to inspect the context_kwargs for all overridable things
     # to yield a correct per-test value.
-    return pytestconfig.option.throttle
+    return parse_browser_kwargs_from_node(request.node, {}).get(
+        "slow_mo", pytestconfig.option.slow_mo
+    )
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -357,11 +376,16 @@ def pw_browser(
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_browser_kwargs() -> ContextKwargs:
+def pw_browser_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
     """
-    return {}
+    # Todo: Define default global ones from the runtime CLI options.
+    # Then update based on per node/test specifics from browser_kwargs.
+    # Todo: This should also be a callable to all deferred and also dynamically
+    # calculating what the overrides should be etc, although that is available
+    # via a fixture at the moment too.
+    return parse_browser_kwargs_from_node(request.node, {})
 
 
 @pytest.fixture(scope=FixtureScope.Function)

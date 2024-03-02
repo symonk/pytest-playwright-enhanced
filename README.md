@@ -45,7 +45,7 @@ Quickly get running by doing the following:
  * `playwright` - At present this returns the sync `Playwright` instance.
  * `pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
  * `pw_headed` - Returns if the browser is running headlessly or not.
- * `pw_throttle` - Returns the currently throttle in milliseconds, defaults to `0`.
+ * `pw_slow_mo` - Returns the currently throttle in milliseconds, defaults to `0`.
  * `pw_is_chromium` - Returns if the current browser is chromium.
  * `pw_is_webkit` - Returns if the current browser is webkit.
  * `pw_is_firefox` - Returns if the current browser is firefox.
