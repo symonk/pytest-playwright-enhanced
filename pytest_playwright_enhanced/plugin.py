@@ -244,7 +244,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         for marker in metafunc.definition.iter_markers():
             if marker.name == "pw_only_on_browsers":
                 engines = tuple(m.lower() for m in marker.args)
-                if any(b not in allowed_engines for b in engines):
+                if any(engine not in allowed_engines for engine in engines):
                     # The user has marked a test with (case insensitive) invalid browser value(s).
                     err_msg = f"Unsupported browser in pw_only_on_browsers in {node}, supported_engines are={allowed_engines}"
                     raise pytest.UsageError(err_msg)
