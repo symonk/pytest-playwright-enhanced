@@ -46,9 +46,9 @@ Quickly get running by doing the following:
  * `pw_multi_browser` - Automatically run a test on `chromium`, `firefox` and `webkit`.
  * `pw_headed` - Returns if the browser is running headlessly or not.
  * `pw_throttle` - Returns the currently throttle in milliseconds, defaults to `0`.
- * `is_chromium` - Returns if the current browser is chromium.
- * `is_webkit` - Returns if the current browser is webkit.
- * `is_firefox` - Returns if the current browser is firefox.
+ * `pw_is_chromium` - Returns if the current browser is chromium.
+ * `pw_is_webkit` - Returns if the current browser is webkit.
+ * `pw_is_firefox` - Returns if the current browser is firefox.
  * `pw_root_url` - Returns the base url auto loaded by `Page` objects.
  * `pw_browser` - Returns the current `Browser` instance.
  * `pw_browser_engine` - A string representing the type of browser for this test.
