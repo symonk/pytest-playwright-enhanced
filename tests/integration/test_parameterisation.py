@@ -3,8 +3,13 @@ import pytest
 
 def test_running_multiple_browsers_parameterized(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
-    def test_basic_browsers(pw_multi_browser):
-        ...
+    def test_basic_browsers(request, pw_multi_browser):
+        if "chromium" in request.node.name:
+            assert pw_multi_browser == "chromium"
+        if "webkit" in request.node.name:
+            assert pw_multi_browser == "webkit"
+        if "firefox" in request.node.name:
+            assert pw_multi_browser == "firefox"
 """)
     result = pytester.runpytest(
         "--browser", "chromium", "--browser", "firefox", "--browser", "webkit"
