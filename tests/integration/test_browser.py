@@ -1,6 +1,19 @@
 import pytest
 
 
+@pytest.mark.skip("iterating browsers is half baked now")
+def test_running_multiple_browsers_parameterized(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+    def test_basic_browsers():
+        assert True
+""")
+    result = pytester.runpytest(
+        "--browser", "chromium", "--browser", "firefox", "--browser", "webkit"
+    )
+    result.assert_outcomes(passed=3)
+    assert result.ret == pytest.ExitCode.OK
+
+
 @pytest.mark.parametrize("browser_type", ["chromium", "webkit", "firefox"])
 def test_browser_type_fixture_is_correct(
     pytester: pytest.Pytester,

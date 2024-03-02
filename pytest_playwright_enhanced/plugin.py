@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import pathlib
 import subprocess
@@ -39,13 +41,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="The root url that should be visited when launching a page.",
     )
     pwe.addoption(
-        # Todo, allow choices in future.
         "--browser",
-        action="store",
-        default="chromium",
+        action="append",
+        default=[],
         dest="browser",
         choices=(BrowserEngine.CHROMIUM, BrowserEngine.WEBKIT, BrowserEngine.FIREFOX),
-        help="The browser engine to use.",
+        help="The browsers to run all tests against.  Defaults to only chromium",
     )
     pwe.addoption(
         "--emulate",
@@ -150,7 +151,7 @@ def pytest_configure(config: pytest.Config) -> None:
     )
     config.addinivalue_line(
         "markers",
-        "only_on_browser(name): mark particular tests to only run on a subset of these browsers.",
+        "only_on_browsers(name): mark particular tests to only run on a subset of these browsers.",
     )
     config.addinivalue_line(
         "markers",
@@ -212,6 +213,35 @@ def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:  # noqa: 
     return pathlib.Path(__file__)
 
 
+@pytest.hookimpl
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    """Generate iterations of tests based on the browsers specified.
+    By default, this plugin will iterate all tests 1:N where N is the
+    --browsers provided.  Various markers can impact generation such
+    as:
+
+        @pytest.mark.ignore_on_browsers(..., ...)
+        @pytest.mark.only_on_browsers(..., ...)
+
+    These markers impact generated tests.
+    """
+    options = metafunc.config.option.browser
+    if "page" in metafunc.fixturenames or "context" in metafunc.fixturenames:
+        # Apply the logic here; we do not want to iterate tests not using the plugin
+        # users may have other tests involved, such as API tests etc, do not automatically
+        # parameterize everything!
+        allowed_browsers = set()
+        _ = allowed_browsers
+        for marker in metafunc.definition.iter_markers():
+            if marker.name == "only_on_browsers":
+                options = list(marker.args)
+                break
+            if marker.name == "ignore_on_browsers":
+                ...
+    # Todo: Finish this core implementation!
+    _ = options
+
+
 @pytest.fixture(scope=FixtureScope.Function)
 def headed(pytestconfig: pytest.Config) -> bool:
     """Returns `True` if the browser is running headed, else `False` if headless."""
@@ -243,8 +273,8 @@ def is_debugging(pytestconfig: pytest.Config) -> bool:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def browser_engine(pytestconfig: pytest.Config) -> str:
-    """Returns the type of browser that will be used."""
+def browser_engine(pytestconfig: pytest.Config) -> list[str]:
+    """Return all the browsers provided by the user."""
     return pytestconfig.option.browser
 
 
@@ -255,7 +285,7 @@ def is_chromium(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserEngine.CHROMIUM
+    return BrowserEngine.CHROMIUM in browser_engine
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -265,7 +295,7 @@ def is_webkit(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserEngine.WEBKIT
+    return BrowserEngine.WEBKIT in browser_engine
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -275,7 +305,7 @@ def is_firefox(browser_engine: str) -> bool:
 
     :param browser_type: The command line flag value for --browser.
     """
-    return browser_engine.lower() == BrowserEngine.FIREFOX
+    return BrowserEngine.FIREFOX in browser_engine
 
 
 @pytest.fixture(scope=FixtureScope.Function)
