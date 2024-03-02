@@ -143,9 +143,14 @@ def pytest_configure(config: pytest.Config) -> None:
     if not safe_to_run_plugin(config):
         return
 
+    # Avoid spurious warnings by registering plugin specific markers.
     config.addinivalue_line(
         "markers",
-        "page_kwargs: provide additional arguments for new playwright pages",
+        "ignore_on_browser(name): mark particular tests to not run on these browsers.",
+    )
+    config.addinivalue_line(
+        "markers",
+        "only_on_browser(name): mark particular tests to only run on a subset of these browsers.",
     )
     config.addinivalue_line(
         "markers",
