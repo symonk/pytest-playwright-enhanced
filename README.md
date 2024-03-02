@@ -52,10 +52,10 @@ Quickly get running by doing the following:
  * `pw_root_url` - Returns the base url auto loaded by `Page` objects.
  * `pw_browser` - Returns the current `Browser` instance.
  * `pw_browser_engine` - A string representing the type of browser for this test.
- * `pw_context_args` - An overridable fixture to control arguments to playwright `Context` instances.
+ * `pw_context_kwargs` - An overridable fixture to control arguments to playwright `Context` instances.
  * `pw_page` - Returns a new `Page` instance.
  * `pw_is_debugging` - Returns if playwright will be using `PW_DEBUG` mode.
- * `pw_browser_args` - An overridable fixture to control arguments to playwright `Browser
+ * `pw_browser_kwargs` - An overridable fixture to control arguments to playwright `Browser
 nstances.
 
 -----

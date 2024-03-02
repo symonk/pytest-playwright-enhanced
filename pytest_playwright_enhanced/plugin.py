@@ -346,18 +346,18 @@ def pw_root_url(pytestconfig: pytest.Config) -> str:
 def pw_browser(
     pw_browser_engine: str,
     playwright: pwsync.Playwright,
-    pw_browser_args: ContextKwargs,
+    pw_browser_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
     browser = getattr(playwright, pw_browser_engine).launch(
-        **pw_browser_args,
+        **pw_browser_kwargs,
     )
     yield browser
     browser.close()
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_browser_args() -> ContextKwargs:
+def pw_browser_kwargs() -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
     """
@@ -365,7 +365,7 @@ def pw_browser_args() -> ContextKwargs:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_context_args() -> ContextKwargs:
+def pw_context_kwargs() -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance.
     """
@@ -388,10 +388,10 @@ def pw_page(
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_context(
     pw_browser: pwsync.Browser,
-    pw_context_args: ContextKwargs,
+    pw_context_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
-    context = pw_browser.new_context(**pw_context_args)
+    context = pw_browser.new_context(**pw_context_kwargs)
     yield context
     context.close()
 
