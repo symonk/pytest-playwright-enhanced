@@ -407,6 +407,7 @@ def pw_page(
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context."""
     page = pw_context.new_page()
+    pw_context.pages.append(page)
     if (base_url := pytestconfig.option.root_url) is not None:
         page.goto(base_url)
     yield page
