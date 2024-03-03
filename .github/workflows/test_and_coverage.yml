@@ -49,6 +49,7 @@ jobs:
           pip --version
           tox --version
           poetry --version
+          python -m playwright install --with-deps
 
       - name: Test without coverage
         if: "! matrix.do_cov"

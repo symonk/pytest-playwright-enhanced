@@ -16,7 +16,7 @@
 offers extended functionality with a focus on removing boilerplate code for projects that wish to test modern 
 web applications and APIs. `pytest-playwright-enhanced` plans to offer the following:
 
- * Automatic, browser management and installation if required.
+ * Automatic, browser management and installation if required (TBD)
  * Improved, human readable APIs that build on top of playwrights API.
  * Improved artifacting and debugability.
  * `Asynchronous` support.

@@ -368,11 +368,15 @@ def pw_browser(
     pw_browser_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
-    browser = getattr(pw_playwright, pw_browser_engine).launch(
-        **pw_browser_kwargs,
-    )
-    yield browser
-    browser.close()
+    try:
+        browser = getattr(pw_playwright, pw_browser_engine).launch(
+            **pw_browser_kwargs,
+        )
+    except pwsync.Error as err:
+        pytest.fail(f"Unable to launch a browser instance because {err!s}")
+    else:
+        yield browser
+        browser.close()
 
 
 @pytest.fixture(scope=FixtureScope.Function)

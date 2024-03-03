@@ -19,9 +19,7 @@ def test_default_slow_mo_is_zero(pytester: pytest.Pytester) -> None:
     result.assert_outcomes(passed=1)
 
 
-@pytest.mark.skip(
-    reason="Tox execution is looking in the /tmp/ homedir of pytest for binaries!"
-)
+@pytest.mark.skip()
 def test_slow_mo_can_be_set_on_a_test_level(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         import pytest

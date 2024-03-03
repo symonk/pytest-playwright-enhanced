@@ -15,7 +15,12 @@ def register_env_defer(var: str, val: str, config: pytest.Config) -> None:
     :param config: The pytest config object to register the callback with.
     """
     os.environ[var] = val
-    callback = lambda: os.environ.pop(var)
+
+    # This should never raise; no default as it's a bug if it does! (for now)
+    def defer(var: str) -> None:
+        os.environ.pop(var)
+
+    callback = lambda: defer(var)
     config.add_cleanup(callback)
 
 
