@@ -50,7 +50,7 @@ jobs:
           tox --version
           poetry --version
           poetry install
-          python -m playwright install --with-deps
+          poetry run python -m playwright install --with-deps
 
       - name: Test without coverage
         if: "! matrix.do_cov"
