@@ -25,21 +25,21 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     """
     pwe = parser.getgroup(
         "playwright-enhanced",
-        "Batteries included playwright for pytest.",
+        "Batteries included playwright for pytest",
     )
     pwe.addoption(
         "--headed",
         action="store_true",
         default=False,
         dest="headed",
-        help="Should tests be ran in headed mode, defaults to headless.",
+        help="Should tests be ran headed. (Defaults to headless).",
     )
     pwe.addoption(
         "--root-url",
         action="store",
         default=None,
         dest="root_url",
-        help="The root url that should be visited when launching a page.",
+        help="The base_url that is loaded by pages. (Defaults to None).",
     )
     pwe.addoption(
         "--browser",

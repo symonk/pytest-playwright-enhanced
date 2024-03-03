@@ -8,7 +8,13 @@ def test_plugin_is_registered(pytester: pytest.Pytester) -> None:
 
 def test_help_is_correct(pytester: pytest.Pytester) -> None:
     result = pytester.runpytest("--help")
-    result.stdout.fnmatch_lines([])
+    result.stdout.fnmatch_lines(
+        [
+            "*Batteries included playwright for pytest:",
+            "*--headed*Should tests be ran headed. (Defaults to headless)*",
+            "*--root-url*The base_url that is loaded by pages. (Defaults to*",
+        ]
+    )
     assert result.ret == pytest.ExitCode.OK
 
 
