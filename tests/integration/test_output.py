@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.output
+
 
 def test_plugin_is_registered(pytester: pytest.Pytester) -> None:
     result = pytester.runpytest()

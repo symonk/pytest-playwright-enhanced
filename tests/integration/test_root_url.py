@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.base_url
+
 
 def test_root_url_default(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(

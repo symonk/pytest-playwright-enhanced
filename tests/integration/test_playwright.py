@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.playwright
+
 
 def test_sync_playwright_is_available(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(

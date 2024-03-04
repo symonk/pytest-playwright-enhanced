@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.context
+
 
 def test_can_overwrite_context_kwargs(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(

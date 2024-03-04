@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.browsers
+
 
 @pytest.mark.parametrize("browser_type", ["chromium", "webkit", "firefox"])
 def test_browser_type_fixture_is_correct(

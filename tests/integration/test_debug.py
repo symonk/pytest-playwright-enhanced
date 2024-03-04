@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.debug
+
 
 def test_debug_env_is_set_when_requested(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(

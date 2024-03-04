@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.launching
+
 
 @pytest.mark.skip(reason="not implemented.")
 def test_can_launch_browser(pytester: pytest.Pytester) -> None:

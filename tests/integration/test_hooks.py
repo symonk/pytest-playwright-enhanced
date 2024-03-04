@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.hooks
+
 
 @pytest.mark.skip(reason="not implemented")
 def test_binary_acquire_hook_fires(pytester: pytest.Pytester) -> None:

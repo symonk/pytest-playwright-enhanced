@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.parameterisation
+
 
 def test_running_multiple_browsers_parameterized(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""

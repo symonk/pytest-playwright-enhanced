@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.headless
+
 
 def test_headless_is_default(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(

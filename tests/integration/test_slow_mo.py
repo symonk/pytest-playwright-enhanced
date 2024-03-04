@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = pytest.mark.slow_mo
+
 
 def test_global_slow_mo_is_applied(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
