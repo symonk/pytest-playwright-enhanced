@@ -21,3 +21,10 @@ repos:
       - id: debug-statements
       - id: detect-private-key
       - id: requirements-txt-fixer
+  - repo: https://github.com/twisted/towncrier
+    rev: 23.11.0
+    hooks:
+      - id: towncrier-check
+      - id: towncrier-update
+        files: changes/
+        args: ['--keep']
