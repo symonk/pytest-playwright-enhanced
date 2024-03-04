@@ -106,3 +106,14 @@ showcontent = true
 directory = "deprecated"
 name ="Deprecated"
 showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Feature"
+showcontent = true
+
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfix"
+showcontent = true
