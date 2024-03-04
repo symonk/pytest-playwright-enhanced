@@ -5,6 +5,12 @@ description = "A pytest plugin for playwright python"
 authors = ["Simon K <jackofspaces@gmail.com>"]
 readme = "README.md"
 
+[tool.towncrier]
+directory = "changes"
+package = "pytest-playwright-enhanced"
+package_dir = "pytest_playwright_enhanced"
+filename = "CHANGELOG.rst"
+
 [tool.poetry.plugins.pytest11]
 pytest_playwright_enhanced = "pytest_playwright_enhanced.plugin"
 
@@ -85,5 +91,3 @@ docstring-code-format = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
-
-[tool.pytest]
