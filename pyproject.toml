@@ -5,11 +5,6 @@ description = "A pytest plugin for playwright python"
 authors = ["Simon K <jackofspaces@gmail.com>"]
 readme = "README.md"
 
-[tool.towncrier]
-directory = "changes"
-package = "pytest-playwright-enhanced"
-package_dir = "pytest_playwright_enhanced"
-filename = "CHANGELOG.rst"
 
 [tool.poetry.plugins.pytest11]
 pytest_playwright_enhanced = "pytest_playwright_enhanced.plugin"
@@ -91,3 +86,23 @@ docstring-code-format = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
+
+[tool.towncrier]
+directory = "changes"
+start_string = "<!-- Pytest Playwright Enhanced Release Notes -->\n"
+underlines = ["", "", ""]
+title_format = "## [{version}](https://github.com/symonk/pytest-playwright-enhanced) - {project_date}"
+issue_format = "[#{issue}](https://github.com/symonk/pytest-playwright-enhanced/issues/{issue})"
+package = "pytest-playwright-enhanced"
+package_dir = "pytest_playwright_enhanced"
+filename = "CHANGELOG.rst"
+
+[[tool.towncrier.type]]
+directory = "security"
+name = "Security"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name ="Deprecated"
+showcontent = true
