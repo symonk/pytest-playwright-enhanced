@@ -93,7 +93,7 @@ start_string = "<!-- Pytest Playwright Enhanced Release Notes -->\n"
 underlines = ["", "", ""]
 title_format = "## [{version}](https://github.com/symonk/pytest-playwright-enhanced) - {project_date}"
 issue_format = "[#{issue}](https://github.com/symonk/pytest-playwright-enhanced/issues/{issue})"
-package = "pytest-playwright-enhanced"
+package = "pytest_playwright_enhanced"
 package_dir = "pytest_playwright_enhanced"
 filename = "CHANGELOG.rst"
 
