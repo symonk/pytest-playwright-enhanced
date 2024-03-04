@@ -163,16 +163,6 @@ def pytest_configure(config: pytest.Config) -> None:
     prepare_environment(config)
 
 
-class PlaywrightEnhancedPlugin:
-    """The core playwright enhanced plugin."""
-
-    def __init__(
-        self: typing.SelfType,
-        config: pytest.Config,
-    ) -> None:
-        self.config = config
-
-
 def prepare_environment(config: pytest.Config) -> None:
     """Prepare various environment variables based on the runtime
     configuration.
