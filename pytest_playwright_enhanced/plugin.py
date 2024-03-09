@@ -81,22 +81,22 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
     pwe.addoption(
         "--screenshot-on-fail",
-        action="store_false",
-        default=True,
+        action="store_true",
+        default=False,
         dest="screenshot_on_fail",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
     pwe.addoption(
         "--video-on-fail",
-        action="store_false",
-        default=True,
+        action="store_true",
+        default=False,
         dest="video_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
     )
     pwe.addoption(
         "--trace-on-fail",
-        action="store_false",
-        default=True,
+        action="store_true",
+        default=False,
         dest="trace_on_fail",
         help="Retain captured trace in the artifacts directory if a test fails.",
     )
