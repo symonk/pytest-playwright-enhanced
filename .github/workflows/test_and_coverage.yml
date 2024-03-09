@@ -79,6 +79,5 @@ jobs:
         with:
           fail_ci_if_error: true
           flags: pytest_playwright_enhanced_unit_tests 
-          fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
