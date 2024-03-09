@@ -20,12 +20,11 @@ jobs:
           "windows-py310",
         ]
         include:
-          # Tests (env specific) stuff is failing on windows. see #8
-          #- name: "windows-py310"
-          #  python: "3.10"
-          #  os: "windows-latest"
-          #  tox_env: "py310"
-          #  do_cov: false
+          - name: "windows-py310"
+            python: "3.10"
+            os: "windows-latest"
+            tox_env: "py310"
+            do_cov: false
           - name: "ubuntu-py38"
             python: "3.8"
             os: ubuntu-20.04

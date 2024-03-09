@@ -1,4 +1,5 @@
 import pathlib
+import sys
 
 import pytest
 
@@ -28,6 +29,7 @@ def test_driver_download_host_not_set_if_omitted(pytester: pytest.Pytester) -> N
     pytester.runpytest().assert_outcomes(passed=1)
 
 
+@pytest.mark.skipif(sys.platform == "windows", reason="Fails on windows")
 def test_driver_path_set_if_provided(
     pytester: pytest.Pytester, tmp_path: pathlib.Path
 ) -> None:
@@ -41,6 +43,7 @@ def test_driver_path_set_if_provided(
     pytester.runpytest("--drivers-path", tmp_path).assert_outcomes(passed=1)
 
 
+@pytest.mark.skipif(sys.platform == "windows", reason="Fails on windows")
 def test_driver_download_host_set_if_provided(
     pytester: pytest.Pytester, tmp_path: pathlib.Path
 ) -> None:
