@@ -17,7 +17,7 @@ jobs:
           "ubuntu-py38",
           "ubuntu-py39",
           "ubuntu-py310",
-          "windows-latest"
+          "windows-latest",
         ]
         include:
           - name: "windows-py310"
