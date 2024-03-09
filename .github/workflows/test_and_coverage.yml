@@ -17,8 +17,14 @@ jobs:
           "ubuntu-py38",
           "ubuntu-py39",
           "ubuntu-py310",
+          "windows-latest"
         ]
         include:
+          - name: "windows-py310"
+            python: "3.10"
+            os: "windows-latest"
+            tox_env: "py310"
+            do_cov: false
           - name: "ubuntu-py38"
             python: "3.8"
             os: ubuntu-20.04
@@ -69,7 +75,7 @@ jobs:
 
       - name: Upload to CodeCov
         if: "matrix.do_cov"
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
         with:
           flags: pytest_playwright_enhanced_unit_tests 
           fail_ci_if_error: true
