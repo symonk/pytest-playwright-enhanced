@@ -59,11 +59,13 @@ jobs:
           poetry run python -m playwright install --with-deps
 
       - name: Test without coverage
+        uses: coactions/setup-xvfb@v1
         if: "! matrix.do_cov"
         run: |
           tox -e ${{ matrix.tox_env }}
 
       - name: Test with coverage
+        uses: coactions/setup-xvfb@v1
         if: "matrix.do_cov"
         run: |
           tox -e ${{ matrix.tox_env }}
