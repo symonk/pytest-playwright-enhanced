@@ -1,21 +1,8 @@
 pytest_plugins = ["pytester"]
-import os
 import pathlib
+import sys
 
 import pytest
-
-
-# Allow us to use downloaded binaries for now; this is only setup for linux
-# based development.  See: https://playwright.dev/docs/browsers for adding
-# support to windows/mac OSX based support.  Eventually PWE will be able
-# to properly auto acquire binaries on the users behalf and this will go
-# away.
-@pytest.mark.hookimpl(trylast=True)
-def pytest_configure() -> None:
-    os.environ.setdefault(
-        "PLAYWRIGHT_BROWSERS_PATH",
-        str(pathlib.Path.home() / ".cache" / "ms-playwright"),
-    )
 
 
 @pytest.fixture(scope="session")
@@ -24,4 +11,14 @@ def drivers_path() -> str:
     for the actual user.  This is **NOT** overly clean, there must be a
     better tox method for handling this, we do not want to have to download
     browser binaries on every run - they are expensive and sizabl!"""
-    return str(pathlib.Path.expanduser(pathlib.Path("~/.cache/ms-playwright/")))
+    if sys.platform == "linux":
+        return str(pathlib.Path.expanduser(pathlib.Path("~/.cache/ms-playwright/")))
+    if sys.platform == "win32":
+        return str(
+            pathlib.Path.expanduser(pathlib.Path("~/AppData/Local/ms-playwright/"))
+        )
+    if sys.platform == "darwin":
+        return str(
+            pathlib.path.expanduser(pathlib.path("~/Libary/Caches/ms-playwright/"))
+        )
+    raise ValueError("undetected operating system for using reusable binaries.")
