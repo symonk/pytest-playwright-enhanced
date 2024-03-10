@@ -24,4 +24,4 @@ def drivers_path() -> str:
     for the actual user.  This is **NOT** overly clean, there must be a
     better tox method for handling this, we do not want to have to download
     browser binaries on every run - they are expensive and sizabl!"""
-    return str(pathlib.Path(f"{os.environ['HOME']}") / ".cache" / "ms-playwright") + "/"
+    return str(pathlib.Path(f"{os.environ['HOME']}") / ".cache" / "ms-playwright")
