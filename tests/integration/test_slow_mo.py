@@ -21,15 +21,19 @@ def test_default_slow_mo_is_zero(pytester: pytest.Pytester) -> None:
     result.assert_outcomes(passed=1)
 
 
-@pytest.mark.skip()
-def test_slow_mo_can_be_set_on_a_test_level(pytester: pytest.Pytester) -> None:
+def test_slow_mo_can_be_set_on_a_test_level(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
     pytester.makepyfile("""
         import pytest
         import time
 
         @pytest.mark.browser_kwargs(config={'slow_mo': 1000})
         def test_slow_mo_override_per_test(pw_page, pw_slow_mo):
+            import time
+            import os
             assert pw_slow_mo == 1000
+            time.sleep(3)
 """)
-    result = pytester.runpytest("--slow-mo", "3000")
+    result = pytester.runpytest("--slow-mo", "3000", f"--drivers-path={drivers_path}")
     result.assert_outcomes(passed=1)
