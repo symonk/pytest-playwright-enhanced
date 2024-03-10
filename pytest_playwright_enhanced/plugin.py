@@ -52,9 +52,9 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="The browsers to run all tests against.  Defaults to only chromium",
     )
     pwe.addoption(
-        "--emulate",
+        "--device",
         action="store",
-        dest="emulate",
+        dest="device",
         help="The device to be emulated.",
     )
     pwe.addoption(
@@ -280,6 +280,12 @@ def pw_multi_browser() -> None:  # noqa: PT004
 def pw_headed(pytestconfig: pytest.Config) -> bool:
     """Returns `True` if the browser is running headed, else `False` if headless."""
     return pytestconfig.option.headed
+
+
+@pytest.fixture(scope=FixtureScope.Function)
+def pw_device(pytestconfig: pytest.Config) -> bool:
+    """Returns the emulated device, if provided."""
+    return pytestconfig.option.device
 
 
 @pytest.fixture(scope=FixtureScope.Function)
