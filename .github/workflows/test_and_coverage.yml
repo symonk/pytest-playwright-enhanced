@@ -60,23 +60,25 @@ jobs:
 
       - name: Test without coverage
         uses: coactions/setup-xvfb@v1
-        if: "! matrix.do_cov"
-        run: |
-          tox -e ${{ matrix.tox_env }}
+        if: ! matrix.do_cov
+        with:
+          run: |
+            tox -e ${{ matrix.tox_env }}
 
       - name: Test with coverage
         uses: coactions/setup-xvfb@v1
-        if: "matrix.do_cov"
-        run: |
-          tox -e ${{ matrix.tox_env }}
+        if: matrix.do_cov
+        with:
+          run: |
+            tox -e ${{ matrix.tox_env }}
 
       - name: Generate cov report
-        if: "matrix.do_cov"
+        if: matrix.do_cov
         run: |
           tox -e report_cov
 
       - name: Upload to CodeCov
-        if: "matrix.do_cov"
+        if: matrix.do_cov
         uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: true
