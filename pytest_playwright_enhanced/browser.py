@@ -1,6 +1,7 @@
 from playwright.sync_api import Browser
 from playwright.sync_api import Playwright
 
+from .const import BrowserEngine
 from .types import AnyDict
 
 
@@ -26,7 +27,7 @@ def webkit_browser_strategy(pw: Playwright, launch_kw: AnyDict) -> Browser:
 
 
 BROWSER_FACTORY = {
-    "chromium": chromium_browser_strategy,
-    "firefox": firefox_browser_strategy,
-    "webkit": webkit_browser_strategy,
+    BrowserEngine.CHROMIUM: chromium_browser_strategy,
+    BrowserEngine.FIREFOX: firefox_browser_strategy,
+    BrowserEngine.WEBKIT: webkit_browser_strategy,
 }
