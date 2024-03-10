@@ -56,7 +56,8 @@ jobs:
           tox --version
           poetry --version
           poetry install
-          poetry run python -m playwright install --with-deps
+          poetry run python -m playwright install 
+          poetry run python -m playwright install-deps
 
       - name: Test without coverage
         uses: coactions/setup-xvfb@v1

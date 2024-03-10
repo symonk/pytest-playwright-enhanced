@@ -8,7 +8,6 @@
 Feature
 
 
-- Add towncrier as a changelog tracker ([#6](https://github.com/symonk/pytest-playwright-enhanced/issues/6))
 - `headless` is now forcefully when enabled when debugging from an IDE.  new `pytest_playwright_is_debugging` hook is available for user defined plugins to override this behaviour or support additional debugging envs. ([#8](https://github.com/symonk/pytest-playwright-enhanced/issues/8))
 
 
