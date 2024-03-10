@@ -64,3 +64,44 @@ def test_unsupported_browser(pytester: pytest.Pytester) -> None:
         "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'webkit', 'firefox')",
     )
     assert result.ret == pytest.ExitCode.USAGE_ERROR
+
+
+def test_all_browser_overrides_fixture(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+    import pytest
+
+    @pytest.mark.browser_kwargs(config={
+        "channel": "chrome",
+        "slow_mo": 10.00,
+        "timeout": 10_000,
+        "chromium_sandbox": True,
+    })
+    def test_browser_kwargs_from_marker(pw_browser):
+        assert pw_browser.is_connected()
+
+""")
+    pytester.runpytest(drivers_path).assert_outcomes(passed=1)
+
+
+def test_all_browser_overrides_marker(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+
+    import pytest
+
+    @pytest.fixture()
+    def pw_browser_kwargs():
+        return {
+            "slow_mo": 5.00,
+            "timeout": 10_000,
+            "chromium_sandbox": True,
+
+        }
+
+    def test_overriden_kwargs_browser(pw_browser):
+        assert pw_browser.is_connected()
+    """)
+    pytester.runpytest(drivers_path).assert_outcomes(passed=1)

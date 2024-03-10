@@ -12,7 +12,7 @@ def test_headless_is_default(pytester: pytest.Pytester, drivers_path: str) -> No
                 assert "HeadlessChrome" not in user_agent
     """
     )
-    result = pytester.runpytest(f"--drivers-path={drivers_path}")
+    result = pytester.runpytest(drivers_path)
     result.assert_outcomes(passed=1)
     assert result.ret == pytest.ExitCode.OK
 
@@ -29,5 +29,5 @@ def test_browser_is_launched_headlessly(
             assert "Chrome" in user_agent
 """
     )
-    result = pytester.runpytest("--headed", f"--drivers-path={drivers_path}")
+    result = pytester.runpytest("--headed", drivers_path)
     result.assert_outcomes(passed=1)

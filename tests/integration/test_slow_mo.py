@@ -33,5 +33,5 @@ def test_slow_mo_can_be_set_on_a_test_level(
         def test_slow_mo_override_per_test(pw_page, pw_slow_mo):
             assert pw_slow_mo == 1000
 """)
-    result = pytester.runpytest("--slow-mo", "3000", f"--drivers-path={drivers_path}")
+    result = pytester.runpytest("--slow-mo", "3000", drivers_path)
     result.assert_outcomes(passed=1)
