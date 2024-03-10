@@ -3,12 +3,14 @@ from __future__ import annotations
 import os
 import pathlib
 import subprocess
+import sys
 import typing
 
 import pytest
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 
+from .browser import BROWSER_FACTORY
 from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
@@ -213,6 +215,16 @@ def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:  # noqa: 
     return pathlib.Path(__file__)
 
 
+@pytest.hookimpl(trylast=True)
+def pytest_playwright_is_debugging(config: pytest.Config) -> bool:  # noqa: ARG001
+    """Best effort guess if an IDE etc is debugging the script.  In
+    which case launched browser instances will have a forced `headed`
+    state.
+
+    :param config: The `pytest.Config` object."""
+    return hasattr(sys, "gettrace") and sys.gettrace() is not None
+
+
 @pytest.hookimpl
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     """Generate iterations of tests based on the browsers specified.
@@ -359,9 +371,7 @@ def pw_browser(
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
     try:
-        browser = getattr(pw_playwright, pw_browser_engine).launch(
-            **pw_browser_kwargs,
-        )
+        browser = BROWSER_FACTORY[pw_browser_engine](pw_playwright, pw_browser_kwargs)
     except pwsync.Error as err:
         pytest.fail(f"Unable to launch a browser instance because {err!s}")
     else:
@@ -379,7 +389,13 @@ def pw_browser_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
     # Todo: This should also be a callable to all deferred and also dynamically
     # calculating what the overrides should be etc, although that is available
     # via a fixture at the moment too.
-    return parse_browser_kwargs_from_node(request.node, {})
+    defaults = {}
+    is_debugging = request.config.hook.pytest_playwright_is_debugging(
+        config=request.config
+    )
+    if is_debugging:
+        defaults["headless"] = False
+    return {**defaults, **parse_browser_kwargs_from_node(request.node, {})}
 
 
 @pytest.fixture(scope=FixtureScope.Function)

@@ -14,5 +14,14 @@ def pytest_playwright_acquire_binaries(config: pytest.Config) -> pathlib.Path:  
     User defined invocations of this which do not return `None`
     will stop the call flow, overriding the default behaviour.
 
-    :param config: The pytest.Config object (auto injected)
+    :param config: The pytest.Config object (auto injected) by pluggy.
     """
+
+
+@pytest.hookspec(firstresult=True)
+def pytest_playwright_is_debugging(config: pytest.Config) -> bool:  # noqa: ARG001
+    """Allow users to define custom debugging detection.  By default
+    `pytest-playwright-enhanced` will detect VSCode, but alternative
+    implementations  can be used here.
+
+    :param config: The pytest.Config object (auto injected) by pluggy."""
