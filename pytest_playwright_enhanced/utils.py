@@ -5,6 +5,8 @@ from typing import Any
 
 import pytest
 
+from .strategy import StrategyFactory
+
 
 def register_env_defer(var: str, val: str, config: pytest.Config) -> None:
     """Register an environment variable and a clean up call back
@@ -48,3 +50,32 @@ def parse_browser_kwargs_from_node(
     if browser_kwargs is None:
         return default
     return browser_kwargs.kwargs.get("config", default)
+
+
+def resolve_commandline_arg_defaults(
+    config: pytest.Config, engine: str
+) -> dict[str, Any]:
+    """Given the pytest config, returns a dictionary mapping the defaults
+    that can be shovelled directly into the playwright browser launch method.
+
+    :param config: The `pytest.Config` object.
+    :param engine: The browser engine to return options for.
+
+    Some options are engine specific, these are automatically filtered out.
+    """
+    defaults = {}
+    if (exec_path := config.option.executable_path) is not None:
+        defaults["executable_path"] = exec_path
+    if (channel := config.option.channel) is not None:
+        defaults["channel"] = channel
+    defaults["timeout"] = config.option.browser_timeout
+    if config.option.headed:
+        defaults["headless"] = False
+    if config.option.chromium_sandbox:
+        defaults["chromium_sandbox"] = True
+
+    # Todo: Sort the traces & download dir options.
+    # devtools we will NOT offer
+    # Todo: sort proxy option
+    # download path we will bake into the plugin
+    return StrategyFactory[engine](defaults)

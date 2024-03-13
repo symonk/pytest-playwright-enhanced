@@ -73,6 +73,8 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Allow debugging by forcing `PWDEBUG=console`.",
     )
 
+    # Todo: Each test run should store all artifacts in a shared temp directory?
+    # Todo: By design, downloaded artifacts are destroyed when a browser ctx is closed.
     pwe.addoption(
         "--artifacts",
         action="store",
@@ -131,6 +133,52 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         choices=("yes", "no", "with-deps"),
         help="Should playwright enhanced auto acquire driver binaries.",
     )
+    pwe.addoption(
+        "--executable-path",
+        action="store",
+        default=None,
+        dest="executable_path",
+        help=(
+            "[Risky] Use this path for browser executables (not the bundled playwright ones).  Use at your own risk as \n\n"
+            "playwright only really supports the bundled options.  This is experimental."
+        ),
+    )
+    pwe.addoption(
+        "--channel",
+        action="store",
+        default=None,
+        choices=(
+            "chrome",
+            "chrome-beta",
+            "chrome-dev",
+            "chrome-canary",
+            "msedge",
+            "msedge-beta",
+            "msedge-dev",
+            "msedge-canary",
+        ),
+        dest="channel",
+        help="The browser distribution channel to use.",
+    )
+    pwe.addoption(
+        "--browser-timeout",
+        action="store",
+        dest="browser_timeout",
+        type=int,
+        default=30_000,
+        help=(
+            "The default timeout in milliseconds for the browser instance to launch. \n\n"
+            "Set to `0` to completely disable.  30 seconds by default."
+        ),
+    )
+    pwe.addoption(
+        "--chromium-sandbox",
+        action="store_true",
+        default=False,
+        dest="chromium_sandbox",
+        help="Enable chromium sandboxing for chromium engine only.  defaults Off.",
+    )
+    # Todo: Proxy settings?
 
 
 @pytest.hookimpl
