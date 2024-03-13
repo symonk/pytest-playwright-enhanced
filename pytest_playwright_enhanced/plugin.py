@@ -10,13 +10,14 @@ import pytest
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 
-from .browser import BROWSER_FACTORY
+from .browser_strategy import BROWSER_FACTORY
 from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
 from .utils import parse_browser_kwargs_from_node
 from .utils import register_env_defer
+from .utils import resolve_commandline_arg_defaults
 from .utils import safe_to_run_plugin
 
 
@@ -440,7 +441,9 @@ def pw_browser(
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_browser_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
+def pw_browser_kwargs(
+    request: pytest.FixtureRequest, pw_browser_engine: str
+) -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
     """
@@ -449,7 +452,7 @@ def pw_browser_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
     # Todo: This should also be a callable to all deferred and also dynamically
     # calculating what the overrides should be etc, although that is available
     # via a fixture at the moment too.
-    defaults = {}
+    defaults = resolve_commandline_arg_defaults(request.config, pw_browser_engine)
     is_debugging = request.config.hook.pytest_playwright_is_debugging(
         config=request.config
     )

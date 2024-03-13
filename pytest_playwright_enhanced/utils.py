@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from .strategy import StrategyFactory
+from .launch_kwargs_strategy import StrategyFactory
 
 
 def register_env_defer(var: str, val: str, config: pytest.Config) -> None:
@@ -66,7 +66,7 @@ def resolve_commandline_arg_defaults(
     defaults = {}
     if (exec_path := config.option.executable_path) is not None:
         defaults["executable_path"] = exec_path
-    if (channel := config.option.channel) is not None:
+    if (channel := config.option.browser_channel) is not None:
         defaults["channel"] = channel
     defaults["timeout"] = config.option.browser_timeout
     if config.option.headed:
