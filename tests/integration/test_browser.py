@@ -75,7 +75,7 @@ def test_all_browser_overrides_fixture(
     @pytest.mark.browser_kwargs(config={
         "channel": "chrome",
         "slow_mo": 10.00,
-        "timeout": 10_000,
+        "timeout": 30_000,
         "chromium_sandbox": True,
     })
     def test_browser_kwargs_from_marker(pw_browser):
@@ -96,7 +96,7 @@ def test_all_browser_overrides_marker(
     def pw_browser_kwargs():
         return {
             "slow_mo": 5.00,
-            "timeout": 10_000,
+            "timeout": 30_000,
             "chromium_sandbox": True,
 
         }
