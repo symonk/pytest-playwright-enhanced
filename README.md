@@ -69,6 +69,7 @@ nstances.
 
 `pytest_playwright_acquire_binaries`: Hook in and customise binary acquisition at runtime.
 `pytest_playwright_is_debugging`: User defined behaviour for detecting if an IDE is debugging.
+`pytest_playwright_browser_env`: Control the environment passed on to playwright browser instances.
 
 
 -----
