@@ -78,4 +78,9 @@ def resolve_commandline_arg_defaults(
     # devtools we will NOT offer
     # Todo: sort proxy option
     # download path we will bake into the plugin
+
+    # These are not configurable options, but enforced by the plugin
+    defaults["handle_sighup"] = True
+    defaults["handle_sigint"] = True
+    defaults["handle_sigterm"] = True
     return StrategyFactory[engine](defaults)

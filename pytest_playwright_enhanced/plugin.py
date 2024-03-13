@@ -78,7 +78,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     pwe.addoption(
         "--artifacts",
         action="store",
-        default="test-artifacts",
+        default="playwright-enhanced-results",
         dest="test-artifacts",
         help="The folder name where various artifacts are stored",
     )
