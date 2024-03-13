@@ -146,6 +146,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     pwe.addoption(
         "--channel",
         action="store",
+        dest="browser_channel",
         default=None,
         choices=(
             "chrome",
@@ -157,7 +158,6 @@ def pytest_addoption(parser: pytest.Parser) -> None:
             "msedge-dev",
             "msedge-canary",
         ),
-        dest="channel",
         help="The browser distribution channel to use.",
     )
     pwe.addoption(
@@ -322,6 +322,12 @@ def pw_multi_browser() -> None:  # noqa: PT004
 
     This is a `meta` fixture and is used/setup properly via the `pytest_generate_tests` hook.
     """
+
+
+@pytest.fixture(scope=FixtureScope.Function)
+def pw_browser_channel(pytestconfig: pytest.Config) -> str | None:
+    """Return the browser channel (if specified)."""
+    return pytestconfig.option.browser_channel
 
 
 @pytest.fixture(scope=FixtureScope.Function)
