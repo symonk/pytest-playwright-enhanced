@@ -23,7 +23,7 @@ def webkit_launch_strategy(defaults: dict[str, str]) -> ...:
     return defaults
 
 
-StrategyFactory = {
+STRATEGY_FACTORY = {
     BrowserEngine.CHROMIUM: chromium_launch_strategy,
     BrowserEngine.FIREFOX: firefox_launch_strategy,
     BrowserEngine.WEBKIT: webkit_launch_strategy,

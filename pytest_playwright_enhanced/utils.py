@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from .launch_kwargs_strategy import StrategyFactory
+from .launch_kwargs_strategy import STRATEGY_FACTORY
 
 
 def register_env_defer(var: str, val: str, config: pytest.Config) -> None:
@@ -83,4 +83,4 @@ def resolve_commandline_arg_defaults(
     defaults["handle_sighup"] = True
     defaults["handle_sigint"] = True
     defaults["handle_sigterm"] = True
-    return StrategyFactory[engine](defaults)
+    return STRATEGY_FACTORY[engine](defaults)
