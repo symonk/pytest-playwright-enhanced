@@ -446,13 +446,22 @@ def pw_browser_kwargs(
 ) -> ContextKwargs:
     """The configuration to launching browser arguments.  Override this fixture to pass arbitrary
     arguments to the launched Browser instance.
+
+    The complexity in this fixture is 2-fold.  We offer:
+
+        * Global, command line based flags for some defaults
+        * User defined capabilities for overriding and applying new launch kwargs via pytest.mark.browser_kwargs
+
+    For the sake of simplicity, the priority is given to pytest.mark options provided for given test, these will
+    automatically override any of the defaults that `pytest-playwright-enhanced` offers from the command line.
+
+    Additionally user defined code can completely override this fixture for a bespoke implementation, however
+    no merging will then occur and they will be responsible for calculating everything.
     """
-    # Todo: Define default global ones from the runtime CLI options.
-    # Then update based on per node/test specifics from browser_kwargs.
-    # Todo: This should also be a callable to all deferred and also dynamically
-    # calculating what the overrides should be etc, although that is available
-    # via a fixture at the moment too.
     defaults = resolve_commandline_arg_defaults(request.config, pw_browser_engine)
+
+    # Handle some debugging magic, if an IDE or debug mode is detected, automatically
+    # force the browsers to open headed.
     is_debugging = request.config.hook.pytest_playwright_is_debugging(
         config=request.config
     )

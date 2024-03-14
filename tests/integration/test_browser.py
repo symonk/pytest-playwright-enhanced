@@ -75,11 +75,14 @@ def test_all_browser_overrides_fixture(
     @pytest.mark.browser_kwargs(config={
         "channel": "chrome",
         "slow_mo": 10.00,
-        "timeout": 30_000,
+        "timeout": 45_000,
         "chromium_sandbox": True,
     })
-    def test_browser_kwargs_from_marker(pw_browser):
-        assert pw_browser.is_connected()
+    def test_browser_kwargs_from_marker(pw_browser_kwargs):
+        assert pw_browser_kwargs['channel'] == "chrome"
+        assert pw_browser_kwargs['slow_mo'] == 10.00
+        assert pw_browser_kwargs['timeout'] == 45_000
+        assert pw_browser_kwargs['chromium_sandbox']
 
 """)
     pytester.runpytest(drivers_path).assert_outcomes(passed=1)
@@ -105,3 +108,30 @@ def test_all_browser_overrides_marker(
         assert pw_browser.is_connected()
     """)
     pytester.runpytest(drivers_path).assert_outcomes(passed=1)
+
+
+def test_browser_kwargs_defaults(pytester: pytest.Pytester) -> None:
+    exe_path = "/tmp/foo"
+    channel = "chrome-dev"
+    timeout = 50_000
+    pytester.makepyfile(f"""
+    def test_browser_kwargs_default(pw_browser_kwargs):
+        assert pw_browser_kwargs['executable_path'] == '{exe_path}'
+        assert pw_browser_kwargs['channel'] == '{channel}'
+        assert pw_browser_kwargs['timeout'] == {timeout}
+        assert pw_browser_kwargs['chromium_sandbox']
+        assert not pw_browser_kwargs['headless']
+        assert pw_browser_kwargs['handle_sighup']
+        assert pw_browser_kwargs['handle_sigint']
+        assert pw_browser_kwargs['handle_sigterm']
+""")
+    pytester.runpytest(
+        "--headed",
+        "--executable-path",
+        exe_path,
+        "--channel",
+        channel,
+        "--browser-timeout",
+        timeout,
+        "--chromium-sandbox",
+    ).assert_outcomes(passed=1)
