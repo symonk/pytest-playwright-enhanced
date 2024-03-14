@@ -139,5 +139,7 @@ def test_browser_kwargs_defaults(pytester: pytest.Pytester) -> None:
 
 def test_browser_kwargs_with_user_defined_overrides(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
+    def test_stub():
+        ...
 """)
     pytester.runpytest().assert_outcomes(passed=1)
