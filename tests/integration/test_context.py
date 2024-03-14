@@ -3,7 +3,7 @@ import pytest
 pytestmark = pytest.mark.context
 
 
-def test_can_overwrite_context_kwargs(pytester: pytest.Pytester) -> None:
+def test_context_kwargs_fixture_override(pytester: pytest.Pytester) -> None:
     pytester.makepyfile(
         """
         import pytest
@@ -18,3 +18,9 @@ def test_can_overwrite_context_kwargs(pytester: pytest.Pytester) -> None:
     )
     result = pytester.runpytest()
     result.assert_outcomes(passed=1)
+
+
+def test_context_kwargs_defaults(): ...  # noqa: ANN201
+
+
+def test_context_kwargs_marker_overrides(): ...  # noqa: ANN201

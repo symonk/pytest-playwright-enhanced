@@ -135,3 +135,9 @@ def test_browser_kwargs_defaults(pytester: pytest.Pytester) -> None:
         timeout,
         "--chromium-sandbox",
     ).assert_outcomes(passed=1)
+
+
+def test_browser_kwargs_with_user_defined_overrides(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+""")
+    pytester.runpytest().assert_outcomes(passed=1)
