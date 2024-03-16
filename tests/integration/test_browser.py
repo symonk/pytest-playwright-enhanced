@@ -3,10 +3,8 @@ import pytest
 pytestmark = pytest.mark.browsers
 
 
-# This test breaks on some ubuintu local setups due to GTK with webkit
-# and in particular when running with vscode.
+# This test will break for webkit if you have a snap install of Vscode.
 # https://github.com/microsoft/playwright/issues/23899
-# Chances are you have a snap install of vscode
 # I tried modifying the settings.json in .vscode/ but to no avail
 # I reinstalled vscode w/o snap to resolve.
 def test_can_launch_browsers_of_types(
