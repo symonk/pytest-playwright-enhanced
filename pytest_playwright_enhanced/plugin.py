@@ -18,7 +18,8 @@ from .types import ContextKwargs
 from .utils import parse_browser_kwargs_from_node
 from .utils import parse_context_kwargs_from_node
 from .utils import register_env_defer
-from .utils import resolve_commandline_arg_defaults
+from .utils import resolve_browser_cli_flag_defaults
+from .utils import resolve_context_cli_flag_defaults
 from .utils import safe_to_run_plugin
 
 
@@ -39,10 +40,10 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Should tests be ran headed. (Defaults to headless).",
     )
     pwe.addoption(
-        "--root-url",
+        "--base-url",
         action="store",
         default=None,
-        dest="root_url",
+        dest="base_url",
         help="The base_url that is loaded by pages. (Defaults to None).",
     )
     pwe.addoption(
@@ -326,6 +327,10 @@ def pw_multi_browser() -> None:  # noqa: PT004
     """
 
 
+# Todo: Alot of these fixtures are overwritable on a per test basis.  The fixture should
+# Report the correct value at runtime, this requires parsing markers and callbacks etc.
+
+
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_browser_channel(pytestconfig: pytest.Config) -> str | None:
     """Return the browser channel (if specified)."""
@@ -419,10 +424,10 @@ def pw_is_firefox(pw_browser_engine: str) -> bool:
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_root_url(pytestconfig: pytest.Config) -> str:
+def pw_base_url(pytestconfig: pytest.Config) -> str:
     """Returns the root url. If provided pages will automatically
     attempt to load this url after creation."""
-    return pytestconfig.option.root_url
+    return pytestconfig.option.base_url
 
 
 @pytest.fixture(scope=FixtureScope.Function)
@@ -459,7 +464,7 @@ def pw_browser_kwargs(
     Additionally user defined code can completely override this fixture for a bespoke implementation, however
     no merging will then occur and they will be responsible for calculating everything.
     """
-    defaults = resolve_commandline_arg_defaults(request.config, pw_browser_engine)
+    defaults = resolve_browser_cli_flag_defaults(request.config, pw_browser_engine)
 
     # Handle some debugging magic, if an IDE or debug mode is detected, automatically
     # force the browsers to open headed.
@@ -467,6 +472,7 @@ def pw_browser_kwargs(
         config=request.config
     )
     if is_debugging:
+        raise Exception("tox")
         defaults["headless"] = False
     return {**defaults, **parse_browser_kwargs_from_node(request.node, {})}
 
@@ -476,20 +482,19 @@ def pw_context_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance.
     """
+    global_kw = resolve_context_cli_flag_defaults(request.config)
     parsed_kw = parse_context_kwargs_from_node(request.node, {})
-    return parsed_kw  # noqa: RET504
+    return {**global_kw, **parsed_kw}
 
 
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_page(
-    pytestconfig: pytest.Config,
     pw_context: pwsync.BrowserContext,
 ) -> typing.Generator[pwsync.Page, None, None]:
-    """Launch a new page (tab) as a child of the browser context."""
+    """Launch a new page (tab) as a child of the browser context.  Context arguments
+    such as base_url are automatically applied by this point."""
     page = pw_context.new_page()
     pw_context.pages.append(page)
-    if (base_url := pytestconfig.option.root_url) is not None:
-        page.goto(base_url)
     yield page
     page.close()
 

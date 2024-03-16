@@ -80,7 +80,7 @@ def _check_for_marker(item: pytest.Item, marker_name: str) -> dict[str, Any]:
     return marker.kwargs
 
 
-def resolve_commandline_arg_defaults(
+def resolve_browser_cli_flag_defaults(
     config: pytest.Config, engine: str
 ) -> dict[str, Any]:
     """Given the pytest config, returns a dictionary mapping the defaults
@@ -112,3 +112,18 @@ def resolve_commandline_arg_defaults(
     defaults["handle_sigint"] = True
     defaults["handle_sigterm"] = True
     return STRATEGY_FACTORY[engine](defaults)
+
+
+def resolve_context_cli_flag_defaults(config: pytest.Config) -> None:
+    """Parses context-specific options from the global command line
+    options.
+
+    These options are then merged with test specific overrides for the context
+    and lastly any dynamic options provided via callback= take utmost priority.
+
+    :param config: The `pytest.Config` object.
+    """
+    defaults = {}
+    if (base_url := config.option.base_url) is not None:
+        defaults["base_url"] = base_url
+    return defaults

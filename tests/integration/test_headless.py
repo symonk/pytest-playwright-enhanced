@@ -8,8 +8,8 @@ def test_headless_is_default(pytester: pytest.Pytester, drivers_path: str) -> No
         """
             def test_headed(pw_page, pw_headed):
                 assert not pw_headed
-                user_agent = pw_page.evaluate("navigator.userAgent;")
-                assert "HeadlessChrome" not in user_agent
+                user_agent = pw_page.evaluate("window.navigator.userAgent;")
+                assert "HeadlessChrome" in user_agent
     """
     )
     result = pytester.runpytest(drivers_path)

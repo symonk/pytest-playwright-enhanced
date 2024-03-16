@@ -14,7 +14,7 @@ def test_help_is_correct(pytester: pytest.Pytester) -> None:
         [
             "*Batteries included playwright for pytest:",
             "*--headed*Should tests be ran headed. (Defaults to headless)*",
-            "*--root-url*The base_url that is loaded by pages. (Defaults to*",
+            "*--base-url*The base_url that is loaded by pages. (Defaults to*",
         ]
     )
     assert result.ret == pytest.ExitCode.OK
