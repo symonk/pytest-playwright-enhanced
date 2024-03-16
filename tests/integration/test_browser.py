@@ -3,6 +3,25 @@ import pytest
 pytestmark = pytest.mark.browsers
 
 
+def test_can_launch_browsers_of_types(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+
+    def test_runs_all_browsers(pw_page, pw_multi_browser):
+        pw_page.goto("https://www.google.com")
+""")
+    pytester.runpytest(
+        "--browser",
+        "chromium",
+        "--browser",
+        "firefox",
+        "--browser",
+        "webkit",
+        drivers_path,
+    ).assert_outcomes(passed=3)
+
+
 @pytest.mark.parametrize("browser_type", ["chromium", "webkit", "firefox"])
 def test_browser_type_fixture_is_correct(
     pytester: pytest.Pytester,
