@@ -176,3 +176,17 @@ def test_browser_kwargs_with_args_raises_pwe_error(pytester: pytest.Pytester) ->
     expected = "*pytest_playwright_enhanced.exceptions.PWEMarkerError: `@pytest.mark.browser_kwargs` only supports keyword args. Test(test_will_fail_with_raises_browser_kwargs*) used args=(100, 200)"
     result.stdout.fnmatch_lines([expected])
     assert result.ret == pytest.ExitCode.TESTS_FAILED
+
+
+def test_dynamic_callback_is_merged(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+        import pytest
+
+        def cb(item):
+            return {"item": item.name}
+
+        @pytest.mark.browser_kwargs(item="overridden", callback=cb)
+        def test_merged_dynamic_callback(request, pw_browser_kwargs):
+            assert pw_browser_kwargs['item'] == request.node.name
+""")
+    pytester.runpytest().assert_outcomes(passed=1)

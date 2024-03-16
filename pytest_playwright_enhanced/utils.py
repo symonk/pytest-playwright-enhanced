@@ -73,6 +73,10 @@ def _check_for_marker(item: pytest.Item, marker_name: str) -> dict[str, Any]:
         return {}
     if marker.args:
         raise PWEMarkerError(marker.args, marker_name, item.name)
+    # Allow a callback function to be returned to merge into the marker kwargs
+    callback = marker.kwargs.get("callback")
+    if callback is not None:
+        return {**marker.kwargs, **callback(item)}
     return marker.kwargs
 
 
