@@ -312,6 +312,11 @@ def pytest_playwright_is_debugging(config: pytest.Config) -> bool:  # noqa: ARG0
     state.
 
     :param config: The `pytest.Config` object."""
+    if "PWE_COVERAGE_NO_DEBUG" in os.environ:
+        # We need this to prevent changing test behaviour regarding headless.
+        # when coverage is running, it registers a `coverage.CTracer` obj as sys.gettrace.
+        return False
+    # Alternatively, consider making this only IDE based detection, or basic python pdb style debuggers?
     return hasattr(sys, "gettrace") and sys.gettrace() is not None
 
 
