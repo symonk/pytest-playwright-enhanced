@@ -537,7 +537,6 @@ def pw_page(
     """Launch a new page (tab) as a child of the browser context.  Context arguments
     such as base_url are automatically applied by this point."""
     page = pw_context.new_page()
-    pw_context.pages.append(page)
     yield page
     page.close()
 
@@ -548,8 +547,13 @@ def pw_context(
     pw_context_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
+    pages: list[pwsync.Page] = []
     context = pw_browser.new_context(**pw_context_kwargs)
+    # Register an event handler to keep track of all the pages opened by this context.
+    context.on("page", lambda page: pages.append(page))
+    # Todo: Figure out many options!
     yield context
+    # Todo: Figure out alot of cleanup and persistence!
     context.close()
 
 
