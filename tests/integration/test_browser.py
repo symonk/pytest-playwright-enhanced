@@ -164,4 +164,15 @@ def test_browser_kwargs_with_user_defined_overrides(pytester: pytest.Pytester) -
     pytester.runpytest().assert_outcomes(passed=1)
 
 
-def test_browser_kwargs_with_args_raises() -> None: ...
+def test_browser_kwargs_with_args_raises_pwe_error(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+        import pytest
+        @pytest.mark.browser_kwargs(100, 200)
+        def test_will_fail_with_raises_browser_kwargs(pw_browser_kwargs):
+            ...
+""")
+    result = pytester.runpytest()
+    result.assert_outcomes(errors=1)
+    expected = "*pytest_playwright_enhanced.exceptions.PWEMarkerError: `@pytest.mark.browser_kwargs` only supports keyword args. Test(test_will_fail_with_raises_browser_kwargs*) used args=(100, 200)"
+    result.stdout.fnmatch_lines([expected])
+    assert result.ret == pytest.ExitCode.TESTS_FAILED

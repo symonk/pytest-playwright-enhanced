@@ -5,7 +5,6 @@ from typing import Any
 
 import pytest
 
-from .const import EnvironmentVars
 from .exceptions import PWEMarkerError
 from .launch_kwargs_strategy import STRATEGY_FACTORY
 
@@ -69,12 +68,11 @@ def parse_context_kwargs_from_node(
 def _check_for_marker(item: pytest.Item, marker_name: str) -> dict[str, Any]:
     """Attempt to parse a browser or context marker to grab the user defied
     keyword args."""
-    test = os.environ.get(EnvironmentVars.PYTEST_CURRENT_TEST, "<unknown>")
     marker = item.get_closest_marker(marker_name)
     if marker is None:
         return {}
     if marker.args:
-        raise PWEMarkerError(marker.args, marker_name, test)
+        raise PWEMarkerError(marker.args, marker_name, item.name)
     return marker.kwargs
 
 
