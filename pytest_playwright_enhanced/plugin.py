@@ -16,6 +16,7 @@ from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
 from .utils import parse_browser_kwargs_from_node
+from .utils import parse_context_kwargs_from_node
 from .utils import register_env_defer
 from .utils import resolve_commandline_arg_defaults
 from .utils import safe_to_run_plugin
@@ -471,11 +472,12 @@ def pw_browser_kwargs(
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_context_kwargs() -> ContextKwargs:
+def pw_context_kwargs(request: pytest.FixtureRequest) -> ContextKwargs:
     """The configuration to launching contexts.  Override this fixture to pass arbitrary
     arguments to the launched Context instance.
     """
-    return {}
+    parsed_kw = parse_context_kwargs_from_node(request.node, {})
+    return parsed_kw  # noqa: RET504
 
 
 @pytest.fixture(scope=FixtureScope.Function)

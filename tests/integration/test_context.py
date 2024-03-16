@@ -34,8 +34,11 @@ def test_context_kwargs_marker_overrides(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
         import pytest
 
-        @pytest.mark.context_kwargs({})
+        @pytest.mark.context_kwargs(accept_downloads=False)
         def test_override_context_kw(pw_context_kwargs) -> None:
-            assert pw_context_kwargs == {}
+            assert pw_context_kwargs == {'accept_downloads': False}
     """)
     pytester.runpytest().assert_outcomes(passed=1)
+
+
+# Todo: Test context_kwargs with args errors.

@@ -91,12 +91,12 @@ def test_all_browser_overrides_fixture(
     pytester.makepyfile("""
     import pytest
 
-    @pytest.mark.browser_kwargs(config={
-        "channel": "chrome",
-        "slow_mo": 10.00,
-        "timeout": 45_000,
-        "chromium_sandbox": True,
-    })
+    @pytest.mark.browser_kwargs(
+        channel="chrome",
+        slow_mo=10.00,
+        timeout=45_000,
+        chromium_sandbox=True,
+    )
     def test_browser_kwargs_from_marker(pw_browser_kwargs):
         assert pw_browser_kwargs['channel'] == "chrome"
         assert pw_browser_kwargs['slow_mo'] == 10.00
@@ -162,3 +162,6 @@ def test_browser_kwargs_with_user_defined_overrides(pytester: pytest.Pytester) -
         ...
 """)
     pytester.runpytest().assert_outcomes(passed=1)
+
+
+def test_browser_kwargs_with_args_raises() -> None: ...

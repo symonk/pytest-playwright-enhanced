@@ -39,6 +39,14 @@ Quickly get running by doing the following:
 * `pip install pytest-playwright-enhanced`
 * `pytest <posargs> --acquire-binaries=with-deps`
 
+
+-----
+
+
+## Overriding Browser and Context args
+
+...
+
 -----
 
 

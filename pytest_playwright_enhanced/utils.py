@@ -5,6 +5,8 @@ from typing import Any
 
 import pytest
 
+from .const import EnvironmentVars
+from .exceptions import PWEMarkerError
 from .launch_kwargs_strategy import STRATEGY_FACTORY
 
 
@@ -45,11 +47,35 @@ def parse_browser_kwargs_from_node(
     overrides specified for the playwright `Browser` instance.
 
     :param item: The `pytest.Item` for the executing test.
+    :param default: A mapping to return if the marker cannot be found on the test.
     """
-    browser_kwargs = item.get_closest_marker("browser_kwargs")
-    if browser_kwargs is None:
-        return default
-    return browser_kwargs.kwargs.get("config", default)
+    parsed = _check_for_marker(item, "browser_kwargs")
+    return parsed or default
+
+
+def parse_context_kwargs_from_node(
+    item: pytest.Item, default: dict[str, Any]
+) -> dict[str, Any]:
+    """Given a test node item, return the parsed marker overrides specified
+    for the playwright `Context` instance.
+
+    :param item: The `pytest.Item` for the executing test.
+    :param default: A mapping to return if the marker cannot be found on the test.
+    """
+    parsed = _check_for_marker(item, "context_kwargs")
+    return parsed or default
+
+
+def _check_for_marker(item: pytest.Item, marker_name: str) -> dict[str, Any]:
+    """Attempt to parse a browser or context marker to grab the user defied
+    keyword args."""
+    test = os.environ.get(EnvironmentVars.PYTEST_CURRENT_TEST, "<unknown>")
+    marker = item.get_closest_marker(marker_name)
+    if marker is None:
+        return {}
+    if marker.args:
+        raise PWEMarkerError(marker.args, marker_name, test)
+    return marker.kwargs
 
 
 def resolve_commandline_arg_defaults(
