@@ -5,7 +5,7 @@ from pytest_playwright_enhanced.launch_kwargs_strategy import webkit_launch_stra
 
 def test_chrome_strategy_retains_chromium_sandbox() -> None:
     mapping = {"chromium_sandbox": True}
-    assert chromium_launch_strategy(mapping) == hash
+    assert chromium_launch_strategy(mapping) == mapping
 
 
 def test_firefox_removes_chromium_sandbox() -> None:
