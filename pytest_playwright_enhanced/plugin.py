@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import typing
 
 import pytest
+from filelock import FileLock
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 
@@ -82,7 +84,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--artifacts",
         action="store",
         default="playwright-enhanced-results",
-        dest="test-artifacts",
+        dest="artifacts",
         help="The folder name where various artifacts are stored",
     )
 
@@ -244,6 +246,43 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
     from pytest_playwright_enhanced import hooks as playwright_hooks
 
     pluginmanager.add_hookspecs(playwright_hooks)
+
+
+@pytest.fixture(scope=FixtureScope.Session, autouse=True)
+def pw_artifacts_dir(
+    pytestconfig: pytest.Config,
+    worker_id: str,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> pytest.Config:
+    """Setup the per test run directory for artifacts.  The
+    user defined --artifacts option can be used to specify the
+    directory (absolute) or a folder name that will reside in
+    the root/base directory of pytest.
+
+    :param pytestconfig: The pytest fixture to fetch the config.
+    """
+    artifacts_dir: pathlib.Path = pytestconfig.rootpath / pytestconfig.option.artifacts
+    if worker_id == "master":
+        # Not using xdist; continue as normal.
+        if artifacts_dir.is_dir():
+            shutil.rmtree(artifacts_dir)
+        artifacts_dir.mkdir()
+        return artifacts_dir
+
+    # xdist -n parallel workers are in the mix, lets generate and clean up the artifacts dir
+    # on the first process to request the fixture, blocking the others until the data is
+    # parsable on disk and cached.
+    # Todo: This needs implemented, CI is switched to single worker for now so this logic
+    # is never hit until resolved.
+    root_temp_dir = tmp_path_factory.getbasetemp().parent
+    fn = root_temp_dir / "data.json"
+    with FileLock(str(fn) + ".lock"):
+        if fn.is_file():
+            # return the path to artifacts dir
+            ...
+        else:
+            ...
+    return artifacts_dir
 
 
 @pytest.hookimpl(trylast=True)
@@ -472,7 +511,6 @@ def pw_browser_kwargs(
         config=request.config
     )
     if is_debugging:
-        raise Exception("tox")
         defaults["headless"] = False
     return {**defaults, **parse_browser_kwargs_from_node(request.node, {})}
 
