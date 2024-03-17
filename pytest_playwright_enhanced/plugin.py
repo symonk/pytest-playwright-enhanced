@@ -89,19 +89,19 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="The folder name where various artifacts are stored",
     )
     pwe.addoption(
-        "--screenshots",
+        "--screenshots-on-fail",
         action="store",
         default="no",
         choices=("yes", "no", "full"),
-        dest="screenshots",
+        dest="screenshots_on_fail",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
-    # Todo: Allow (yes|no|widthXheight)  # noqa ERA001
     pwe.addoption(
-        "--video-on-fail",
-        action="store_true",
-        default=False,
-        dest="video_on_fail",
+        "--videos-on-fail",
+        action="store",
+        default="no",
+        choices=("yes", "no", "size"),
+        dest="videos_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
     )
     pwe.addoption(
@@ -545,7 +545,7 @@ def pw_context(
     pages: list[pwsync.Page] = []
 
     additional_ctx_kwargs = {}
-    if pytestconfig.option.video_on_fail:
+    if pytestconfig.option.videos_on_fail:
         additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir
 
     ctx_kwargs = {**pw_context_kwargs, **additional_ctx_kwargs}
