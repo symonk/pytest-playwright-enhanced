@@ -31,15 +31,15 @@ def test_video_on_fail_default(pytester: pytest.Pytester) -> None:
 def test_screenshot_on_fail_enabled(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
     def test_default(pytestconfig):
-        assert pytestconfig.option.screenshot_on_fail
+        assert pytestconfig.option.screenshots == "yes"
 """)
-    pytester.runpytest("--screenshot-on-fail").assert_outcomes(passed=1)
+    pytester.runpytest("--screenshots", "yes").assert_outcomes(passed=1)
 
 
 def test_screenshot_on_fail_default(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
     def test_default(pytestconfig):
-        assert not pytestconfig.option.screenshot_on_fail
+        assert pytestconfig.option.screenshots == "no"
 """)
     pytester.runpytest().assert_outcomes(passed=1)
 

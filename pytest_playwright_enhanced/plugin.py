@@ -88,14 +88,15 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         dest="artifacts",
         help="The folder name where various artifacts are stored",
     )
-
     pwe.addoption(
-        "--screenshot-on-fail",
-        action="store_true",
-        default=False,
-        dest="screenshot_on_fail",
+        "--screenshots",
+        action="store",
+        default="no",
+        choices=("yes", "no", "full"),
+        dest="screenshots",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
+    # Todo: Allow (yes|no|widthXheight)  # noqa ERA001
     pwe.addoption(
         "--video-on-fail",
         action="store_true",
