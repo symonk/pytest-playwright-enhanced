@@ -11,6 +11,7 @@ import pytest
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 
+from .actions import VideoAction
 from .browser_strategy import BROWSER_FACTORY
 from .const import BrowserEngine
 from .const import EnvironmentVars
@@ -84,24 +85,22 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     pwe.addoption(
         "--artifacts",
         action="store",
-        default="playwright-enhanced-results",
+        # Todo: This needs safety around trailing /
+        default="playwright-enhanced-results/",
         dest="artifacts",
         help="The folder name where various artifacts are stored",
     )
     pwe.addoption(
         "--screenshots-on-fail",
         action="store",
-        default="no",
         choices=("yes", "no", "full"),
         dest="screenshots_on_fail",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
     pwe.addoption(
         "--videos-on-fail",
-        action="store",
+        action=VideoAction,
         default="no",
-        # This 'size' won't work, we should parse (yes|no|some string with a 'x' in it and cast to integers?)
-        choices=("yes", "no", "size"),
         dest="videos_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
     )
@@ -206,8 +205,6 @@ def pytest_configure(config: pytest.Config) -> None:
     # Handle propagating a single artifacts dir even when multiple xdist
     # workers are in the mix.
     if is_master_worker(config):
-        if not config.option.artifacts.endswith("/"):
-            config.option.artifacts += "/"
         artifacts_dir: pathlib.Path = config.rootpath / config.option.artifacts
         if artifacts_dir.is_dir():
             shutil.rmtree(artifacts_dir)
@@ -548,7 +545,13 @@ def pw_context(
     additional_ctx_kwargs = {}
     # Todo: This is not really 'on fail' as such, we don't have that scope
     if pytestconfig.option.videos_on_fail != "no":
-        additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir
+        additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir + "/"
+        if "x" in pytestconfig.option.videos_on_fail:
+            width, _, height = pytestconfig.option.videos_on_fail.partition("x")
+            additional_ctx_kwargs["record_video_size"] = {
+                "width": int(width),
+                "height": int(height),
+            }
         # Todo: we need to support size here aswell
     if pytestconfig.option.screenshots_on_fail != "no":
         # Todo: This needs handled on a `Page` instead?
