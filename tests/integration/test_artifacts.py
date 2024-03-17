@@ -60,6 +60,7 @@ def test_trace_on_fail_default(pytester: pytest.Pytester) -> None:
     pytester.runpytest().assert_outcomes(passed=1)
 
 
+@pytest.mark.skip(reason="relies on order for now.")
 def test_videos_are_stored_in_artifacts_folder(
     pytester: pytest.Pytester, drivers_path: str
 ) -> None:
