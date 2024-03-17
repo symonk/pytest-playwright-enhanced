@@ -100,6 +100,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--videos-on-fail",
         action="store",
         default="no",
+        # This 'size' won't work, we should parse (yes|no|some string with a 'x' in it and cast to integers?)
         choices=("yes", "no", "size"),
         dest="videos_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
