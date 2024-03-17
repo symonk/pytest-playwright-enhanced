@@ -127,3 +127,9 @@ def resolve_context_cli_flag_defaults(config: pytest.Config) -> None:
     if (base_url := config.option.base_url) is not None:
         defaults["base_url"] = base_url
     return defaults
+
+
+def is_master_worker(config: pytest.Config) -> bool:
+    """Detect if the calling code is an xdist worker
+    or the master worker."""
+    return not hasattr(config, "workerinput")

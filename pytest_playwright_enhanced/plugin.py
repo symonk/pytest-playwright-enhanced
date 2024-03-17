@@ -8,7 +8,6 @@ import sys
 import typing
 
 import pytest
-from filelock import FileLock
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 
@@ -17,6 +16,7 @@ from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
+from .utils import is_master_worker
 from .utils import parse_browser_kwargs_from_node
 from .utils import parse_context_kwargs_from_node
 from .utils import register_env_defer
@@ -200,6 +200,17 @@ def pytest_configure(config: pytest.Config) -> None:
     if not safe_to_run_plugin(config):
         return
 
+    # Handle propagating a single artifacts dir even when multiple xdist
+    # workers are in the mix.
+    if is_master_worker(config):
+        artifacts_dir: pathlib.Path = config.rootpath / config.option.artifacts
+        if artifacts_dir.is_dir():
+            shutil.rmtree(artifacts_dir)
+        artifacts_dir.mkdir()
+        # We have to convert the path to a string otherwise it is not serializable
+        # across xdist worker processes.
+        config.artifacts_dir = str(artifacts_dir)
+
     # Avoid spurious warnings by registering plugin specific markers.
     config.addinivalue_line(
         "markers", "pw_only_on_browsers(name): Opt in browsers to iterate a test on."
@@ -216,6 +227,12 @@ def pytest_configure(config: pytest.Config) -> None:
     if config.option.acquire_drivers != "no":
         _ = config.hook.pytest_playwright_acquire_binaries(config=config)
     prepare_environment(config)
+
+
+@pytest.hookimpl
+def pytest_configure_node(node: pytest.Item) -> None:
+    """Prepare the xdist workers with the artifacts dir availability."""
+    node.workerinput["artifacts_dir"] = node.config.artifacts_dir
 
 
 def prepare_environment(config: pytest.Config) -> None:
@@ -248,41 +265,14 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
     pluginmanager.add_hookspecs(playwright_hooks)
 
 
-@pytest.fixture(scope=FixtureScope.Session, autouse=True)
-def pw_artifacts_dir(
-    pytestconfig: pytest.Config,
-    worker_id: str,
-    tmp_path_factory: pytest.TempPathFactory,
-) -> pytest.Config:
-    """Setup the per test run directory for artifacts.  The
-    user defined --artifacts option can be used to specify the
-    directory (absolute) or a folder name that will reside in
-    the root/base directory of pytest.
+@pytest.fixture(scope=FixtureScope.Session)
+def pw_artifacts_dir(pytestconfig: pytest.Config) -> str:
+    """Returns the path (str) to the absolute path of the artifacts
+    directory for this run.
 
-    :param pytestconfig: The pytest fixture to fetch the config.
+    :param pytestconfig: The `pytest.Config object, auto injected.
     """
-    artifacts_dir: pathlib.Path = pytestconfig.rootpath / pytestconfig.option.artifacts
-    if worker_id == "master":
-        # Not using xdist; continue as normal.
-        if artifacts_dir.is_dir():
-            shutil.rmtree(artifacts_dir)
-        artifacts_dir.mkdir()
-        return artifacts_dir
-
-    # xdist -n parallel workers are in the mix, lets generate and clean up the artifacts dir
-    # on the first process to request the fixture, blocking the others until the data is
-    # parsable on disk and cached.
-    # Todo: This needs implemented, CI is switched to single worker for now so this logic
-    # is never hit until resolved.
-    root_temp_dir = tmp_path_factory.getbasetemp().parent
-    fn = root_temp_dir / "data.json"
-    with FileLock(str(fn) + ".lock"):
-        if fn.is_file():
-            # return the path to artifacts dir
-            ...
-        else:
-            ...
-    return artifacts_dir
+    return pytestconfig.artifacts_dir
 
 
 @pytest.hookimpl(trylast=True)
