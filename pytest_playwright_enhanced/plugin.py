@@ -546,16 +546,33 @@ def pw_context(
     pages: list[pwsync.Page] = []
 
     additional_ctx_kwargs = {}
-    if pytestconfig.option.videos_on_fail:
+    # Todo: This is not really 'on fail' as such, we don't have that scope
+    if pytestconfig.option.videos_on_fail != "no":
         additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir
+        # Todo: we need to support size here aswell
+    if pytestconfig.option.screenshots_on_fail != "no":
+        # Todo: This needs handled on a `Page` instead?
+        ...
 
     ctx_kwargs = {**pw_context_kwargs, **additional_ctx_kwargs}
     context = pw_browser.new_context(**ctx_kwargs)
+
+    # Handle trace level specifics;
+    tracing = False
+    if pytest.option.trace_on_fail:
+        tracing = True
+        context.tracing.start(
+            screenshot=pytestconfig.option.screenshots_on_failure != "no",
+            snapshots=True,
+            sources=True,
+        )
+
     # Register an event handler to keep track of all the pages opened by this context.
     context.on("page", lambda page: pages.append(page))
 
     yield context
-    # Todo: Figure out alot of cleanup and persistence!
+    if tracing:
+        context.tracing.stop(path=pytestconfig.artifacts_dir)
     context.close()
 
 
