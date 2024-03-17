@@ -559,7 +559,7 @@ def pw_context(
 
     # Handle trace level specifics;
     tracing = False
-    if pytest.option.trace_on_fail:
+    if pytestconfig.option.trace_on_fail:
         tracing = True
         context.tracing.start(
             screenshot=pytestconfig.option.screenshots_on_failure != "no",
