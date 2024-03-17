@@ -321,7 +321,6 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     --browsers provided.  Various markers can impact generation such
     as:
 
-        @pytest.mark.ignore_on_browsers(..., ...)
         @pytest.mark.only_on_browsers(..., ...)
 
     These markers impact generated tests.
