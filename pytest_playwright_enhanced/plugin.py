@@ -586,6 +586,9 @@ def pw_context(
         ...
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
+
+    # Todo: Check screenshot status, iterate open page(s) and capture screenshots
+    # to the artifacts directory.
     context.close()
 
 
