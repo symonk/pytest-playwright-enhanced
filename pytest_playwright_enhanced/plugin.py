@@ -80,6 +80,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
     # Todo: Each test run should store all artifacts in a shared temp directory?
     # Todo: By design, downloaded artifacts are destroyed when a browser ctx is closed.
+    # Todo: Custom action that suffixes "/" if it is not provided by the user.
     pwe.addoption(
         "--artifacts",
         action="store",
@@ -203,6 +204,8 @@ def pytest_configure(config: pytest.Config) -> None:
     # Handle propagating a single artifacts dir even when multiple xdist
     # workers are in the mix.
     if is_master_worker(config):
+        if not config.option.artifacts.endswith("/"):
+            config.option.artifacts += "/"
         artifacts_dir: pathlib.Path = config.rootpath / config.option.artifacts
         if artifacts_dir.is_dir():
             shutil.rmtree(artifacts_dir)
@@ -266,13 +269,14 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
 
 
 @pytest.fixture(scope=FixtureScope.Session)
-def pw_artifacts_dir(pytestconfig: pytest.Config) -> str:
-    """Returns the path (str) to the absolute path of the artifacts
-    directory for this run.
+def pw_artifacts_dir(pytestconfig: pytest.Config) -> pathlib.path:
+    """Cast the absolute path to the artifacts directory for the
+    run.  This is cast in the fixture as we cannot serialize a
+    pathlib.Path object across xdist workers.
 
     :param pytestconfig: The `pytest.Config object, auto injected.
     """
-    return pytestconfig.artifacts_dir
+    return pathlib.Path(pytestconfig.artifacts_dir)
 
 
 @pytest.hookimpl(trylast=True)
@@ -533,15 +537,22 @@ def pw_page(
 
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_context(
+    pytestconfig: pytest.Config,
     pw_browser: pwsync.Browser,
     pw_context_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     pages: list[pwsync.Page] = []
-    context = pw_browser.new_context(**pw_context_kwargs)
+
+    additional_ctx_kwargs = {}
+    if pytestconfig.option.video_on_fail:
+        additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir
+
+    ctx_kwargs = {**pw_context_kwargs, **additional_ctx_kwargs}
+    context = pw_browser.new_context(**ctx_kwargs)
     # Register an event handler to keep track of all the pages opened by this context.
     context.on("page", lambda page: pages.append(page))
-    # Todo: Figure out many options!
+
     yield context
     # Todo: Figure out alot of cleanup and persistence!
     context.close()
