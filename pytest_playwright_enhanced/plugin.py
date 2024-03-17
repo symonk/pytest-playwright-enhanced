@@ -94,6 +94,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--screenshots-on-fail",
         action="store",
         choices=("yes", "no", "full"),
+        default="no",
         dest="screenshots_on_fail",
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
@@ -535,6 +536,7 @@ def pw_page(
 
 @pytest.fixture(scope=FixtureScope.Function)
 def pw_context(
+    request: pytest.FixtureRequest,
     pytestconfig: pytest.Config,
     pw_browser: pwsync.Browser,
     pw_context_kwargs: ContextKwargs,
@@ -574,12 +576,18 @@ def pw_context(
     context.on("page", lambda page: pages.append(page))
 
     yield context
+
+    test_result = request.node.stash[PhaseReportKey]
+    if test_result["setup"].failed:
+        # The test actually failed in setup, possibly skipped etc.
+        ...
+    elif "call" in test_result and not test_result["call"].failed:
+        # The test actually passed it's execution.
+        ...
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
     context.close()
 
-
-# ----- Hook Specifics
 
 PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
 
