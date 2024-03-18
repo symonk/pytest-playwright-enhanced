@@ -536,7 +536,7 @@ def pw_page(
     to various artifacts etc prior to closing."""
     page = pw_context.new_page()
     yield page
-    page.close(run_before_unload=True)
+    page.close()
 
 
 @pytest.fixture(scope=FixtureScope.Function)
