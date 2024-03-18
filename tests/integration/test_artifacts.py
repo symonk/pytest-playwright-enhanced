@@ -189,7 +189,6 @@ def test_traces_are_stored_in_artifacts_folder() -> None: ...
 def test_traces_are_not_stored_in_artifacts_folder() -> None: ...
 
 
-@pytest.mark.skip(reason="Reproducible example for /issues/#22")
 def test_multiple_videos_with_xdist_is_correct(
     pytester: pytest.Pytester, drivers_path: str
 ) -> None:
@@ -210,4 +209,9 @@ def test_multiple_videos_with_xdist_is_correct(
         "chromium",
         "--video-on-fail",
         "yes",
-    ).assert_outcomes(passed=3)
+    ).assert_outcomes(failed=3)
+    assert {
+        "test-xdist-chromium-0.webm",
+        "test-xdist-webkit-0.webm",
+        "test-xdist-firefox-0.webm",
+    } == artifact_files(pytester, "webm")

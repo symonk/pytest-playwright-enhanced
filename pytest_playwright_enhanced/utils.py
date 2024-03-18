@@ -147,3 +147,10 @@ def test_was_not_skipped_and_passed(item: pytest.Item, key: pytest.StashKey) -> 
     setup_ok = "setup" in report and not report["setup"].failed
     call_ok = "call" in report and not report["call"].failed
     return setup_ok and call_ok
+
+
+def get_artifacts_dir_from_node(pytestconfig: pytest.Config) -> str:
+    """Fetches the artifacts directory in an xdist compatible way."""
+    if hasattr(pytestconfig, "workerinput"):
+        return pytestconfig.workerinput["artifacts_dir"]
+    return pytestconfig.artifacts_dir

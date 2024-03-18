@@ -11,6 +11,7 @@ import pytest
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
 from slugify import slugify
+from xdist.workermanage import WorkerController
 
 from .actions import VideoAction
 from .browser_strategy import BROWSER_FACTORY
@@ -18,6 +19,7 @@ from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
 from .types import ContextKwargs
+from .utils import get_artifacts_dir_from_node
 from .utils import is_master_worker
 from .utils import parse_browser_kwargs_from_node
 from .utils import parse_context_kwargs_from_node
@@ -235,7 +237,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.hookimpl
-def pytest_configure_node(node: pytest.Item) -> None:
+def pytest_configure_node(node: WorkerController) -> None:
     """Prepare the xdist workers with the artifacts dir availability."""
     node.workerinput["artifacts_dir"] = node.config.artifacts_dir
 
@@ -278,7 +280,7 @@ def pw_artifacts_dir(pytestconfig: pytest.Config) -> pathlib.path:
 
     :param pytestconfig: The `pytest.Config object, auto injected.
     """
-    return pathlib.Path(pytestconfig.artifacts_dir)
+    return pathlib.Path(get_artifacts_dir_from_node(pytestconfig))
 
 
 @pytest.hookimpl(trylast=True)
@@ -548,10 +550,10 @@ def pw_context(
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     pages: list[pwsync.Page] = []
-
+    artifacts_dir = get_artifacts_dir_from_node(pytestconfig)
     additional_ctx_kwargs = {}
     if (video := pytestconfig.option.video_on_fail) != "no":
-        additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir + "/"
+        additional_ctx_kwargs["record_video_dir"] = artifacts_dir + "/"
         if "x" in video:
             width, _, height = video.partition("x")
             additional_ctx_kwargs["record_video_size"] = {
@@ -603,9 +605,7 @@ def pw_context(
             for idx, page in enumerate(pages):
                 video = page.video
                 if video is not None:
-                    file_path = (
-                        pathlib.Path(pytestconfig.artifacts_dir) / f"{name}-{idx}.webm"
-                    )
+                    file_path = pathlib.Path(artifacts_dir) / f"{name}-{idx}.webm"
                     video.save_as(file_path)
                     video.delete()
 
