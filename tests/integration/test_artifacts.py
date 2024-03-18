@@ -147,6 +147,28 @@ def test_multiple_pages_returns_multiple_videos_in_artifacts(
     assert artifact_files(pytester, "webm") == expected_files
 
 
+def test_multiple_pages_returns_multiple_videos_when_width_height_is_set(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+        def test_multiple_pages(pw_context):
+            one = pw_context.new_page()
+            two = pw_context.new_page()
+            one.goto("https://www.google.com")
+            two.goto("https://www.google.com")
+            # Fail to retain videos
+            assert False
+""")
+    result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
+    result.assert_outcomes(failed=1)
+    assert result.ret == pytest.ExitCode.TESTS_FAILED
+    expected_files = {
+        "test-multiple-pages-chromium-0.webm",
+        "test-multiple-pages-chromium-1.webm",
+    }
+    assert artifact_files(pytester, "webm") == expected_files
+
+
 def test_videos_are_removed_when_passing_regardless(
     pytester: pytest.Pytester, drivers_path: str
 ) -> None:
