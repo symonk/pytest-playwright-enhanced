@@ -589,7 +589,7 @@ def pw_context(
     if video != "no":
         if passed:
             # The test has passed, unlink all video files regardless.
-            for page in pages:
+            for page in context.pages:
                 video = page.video
                 if video is not None:
                     page.video.delete()
@@ -600,7 +600,7 @@ def pw_context(
             # Todo: Consider file name lengths here in future, could break with long node names
             # such as parameterised (heavily) nodes.
             name = slugify(request.node.name)
-            for idx, page in enumerate(pages):
+            for idx, page in enumerate(context.pages):
                 video = page.video
                 if video is not None:
                     file_path = (
