@@ -4,7 +4,7 @@ pytestmark = pytest.mark.artifacts
 
 
 def test_video_action_without_supported(pytester: pytest.Pytester) -> None:
-    result = pytester.runpytest("--videos-on-fail", "unsupported")
+    result = pytester.runpytest("--video-on-fail", "unsupported")
     result.stderr.fnmatch_lines(
         ["*can only be 'yes', 'no' or a width x height string such as '800x640'*"]
     )
@@ -12,13 +12,13 @@ def test_video_action_without_supported(pytester: pytest.Pytester) -> None:
 
 
 def test_video_action_without_width_integer(pytester: pytest.Pytester) -> None:
-    result = pytester.runpytest("--videos-on-fail", "nox800")
+    result = pytester.runpytest("--video-on-fail", "nox800")
     result.stderr.fnmatch_lines(["*width x height option must both be valid integers*"])
     assert result.ret == pytest.ExitCode.USAGE_ERROR
 
 
 def test_video_action_without_height_integer(pytester: pytest.Pytester) -> None:
-    result = pytester.runpytest("--videos-on-fail", "1024xno")
+    result = pytester.runpytest("--video-on-fail", "1024xno")
     result.stderr.fnmatch_lines(["*width x height option must both be valid integers*"])
     assert result.ret == pytest.ExitCode.USAGE_ERROR
 
@@ -35,15 +35,15 @@ def test_artifacts_directory_exists(pytester: pytest.Pytester) -> None:
 def test_video_on_fail_enabled(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
     def test_default(pytestconfig):
-        assert pytestconfig.option.videos_on_fail == "yes"
+        assert pytestconfig.option.video_on_fail == "yes"
 """)
-    pytester.runpytest("--videos-on-fail", "yes").assert_outcomes(passed=1)
+    pytester.runpytest("--video-on-fail", "yes").assert_outcomes(passed=1)
 
 
 def test_video_on_fail_default(pytester: pytest.Pytester) -> None:
     pytester.makepyfile("""
     def test_default(pytestconfig):
-        assert pytestconfig.option.videos_on_fail == "no"
+        assert pytestconfig.option.video_on_fail == "no"
 """)
     pytester.runpytest().assert_outcomes(passed=1)
 
@@ -96,7 +96,7 @@ def test_videos_are_stored_in_artifacts_folder(
             assert len(files) == 1
             assert files[0].name.endswith(".webm")
 """)
-    result = pytester.runpytest(drivers_path, "--videos-on-fail", "yes")
+    result = pytester.runpytest(drivers_path, "--video-on-fail", "yes")
     result.assert_outcomes(passed=1, failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
 
@@ -117,7 +117,7 @@ def test_videos_are_stored_when_width_height_is_specified(
             assert len(files) == 1
             assert files[0].name.endswith(".webm")
 """)
-    result = pytester.runpytest(drivers_path, "--videos-on-fail", "1024x768")
+    result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
     result.assert_outcomes(passed=1, failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
 

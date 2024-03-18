@@ -99,10 +99,10 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
     pwe.addoption(
-        "--videos-on-fail",
+        "--video-on-fail",
         action=VideoAction,
         default="no",
-        dest="videos_on_fail",
+        dest="video_on_fail",
         help="Retain captured videos in the artifacts directory if a test fails.",
     )
     pwe.addoption(
@@ -546,10 +546,10 @@ def pw_context(
 
     additional_ctx_kwargs = {}
     # Todo: This is not really 'on fail' as such, we don't have that scope
-    if pytestconfig.option.videos_on_fail != "no":
+    if pytestconfig.option.gvideo_on_fail != "no":
         additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir + "/"
-        if "x" in pytestconfig.option.videos_on_fail:
-            width, _, height = pytestconfig.option.videos_on_fail.partition("x")
+        if "x" in pytestconfig.option.gvideo_on_fail:
+            width, _, height = pytestconfig.option.gvideo_on_fail.partition("x")
             additional_ctx_kwargs["record_video_size"] = {
                 "width": int(width),
                 "height": int(height),
