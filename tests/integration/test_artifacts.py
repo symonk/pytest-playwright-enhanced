@@ -189,4 +189,25 @@ def test_traces_are_stored_in_artifacts_folder() -> None: ...
 def test_traces_are_not_stored_in_artifacts_folder() -> None: ...
 
 
-# Todo Videos, screenshots & traces for their bespoke 3rd options.
+@pytest.mark.skip(reason="Reproducible example for /issues/#22")
+def test_multiple_videos_with_xdist_is_correct(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+    def test_xdist(pw_page, pw_multi_browser):
+        pw_page.goto("https://www.google.com")
+        assert False
+""")
+    pytester.runpytest(
+        drivers_path,
+        "-n",
+        3,
+        "--browser",
+        "webkit",
+        "--browser",
+        "firefox",
+        "--browser",
+        "chromium",
+        "--video-on-fail",
+        "yes",
+    ).assert_outcomes(passed=3)
