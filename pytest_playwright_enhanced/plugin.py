@@ -586,7 +586,9 @@ def pw_context(
         if passed:
             # The test has passed, unlink all video files regardless.
             for page in pages:
-                page.video.delete()
+                video = page.video
+                if video is not None:
+                    page.video.delete()
         else:
             # The test failed and the user has requested to keep video artifacts
             # Lets try and rename them to be test appropriately named rather than
@@ -595,8 +597,11 @@ def pw_context(
             # such as parameterised (heavily) nodes.
             name = slugify(request.node.name)
             for idx, page in enumerate(pages):
-                path = pathlib.Path(page.video.path())
-                path.rename(f"{name}-{idx}.webm")
+                video = page.video
+                if video is not None:
+                    path = pathlib.Path(page.video.path())
+                    # Todo: renaming like this is not doing what we think, its renaming relative to CWD?
+                    path.rename(f"{name}-{idx}.webm")
 
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
