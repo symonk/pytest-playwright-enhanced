@@ -1,5 +1,7 @@
 import pytest
 
+from ..utils import artifact_files
+
 pytestmark = pytest.mark.artifacts
 
 
@@ -92,7 +94,7 @@ def test_videos_are_stored_in_artifacts_folder(
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     expected = {"test-fails-with-video-chromium-0.webm"}
-    assert {f.name for f in pytester.path.glob("*.webm")} == expected
+    assert expected == artifact_files(pytester, "webm")
 
 
 def test_videos_are_stored_when_width_height_is_specified(
@@ -106,9 +108,7 @@ def test_videos_are_stored_when_width_height_is_specified(
     result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
-    assert {"test-fails-with-video-chromium-0.webm"} == {
-        f.name for f in pytester.path.glob("*.webm")
-    }
+    assert {"test-fails-with-video-chromium-0.webm"} == artifact_files(pytester, "webm")
 
 
 def test_videos_are_not_stored_in_artifacts_folder(
@@ -122,7 +122,7 @@ def test_videos_are_not_stored_in_artifacts_folder(
     result = pytester.runpytest(drivers_path)
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
-    assert not [f.name for f in pytester.path.glob("*.webm")]
+    assert not artifact_files(pytester, "webm")
 
 
 def test_multiple_pages_returns_multiple_videos_in_artifacts(
@@ -144,8 +144,7 @@ def test_multiple_pages_returns_multiple_videos_in_artifacts(
         "test-multiple-pages-chromium-0.webm",
         "test-multiple-pages-chromium-1.webm",
     }
-    files = {f.name for f in pytester.path.glob("*.webm")}
-    assert files == expected_files
+    assert artifact_files(pytester, "webm") == expected_files
 
 
 def test_videos_are_removed_when_passing_regardless(
@@ -157,7 +156,7 @@ def test_videos_are_removed_when_passing_regardless(
             assert True
 """)
     pytester.runpytest(drivers_path, "--video-on-fail", "yes")
-    assert not [f.name for f in pytester.path.glob("*.webm")]
+    assert not artifact_files(pytester, "webm")
 
 
 def test_screenshots_are_stored_in_artifacts_folder() -> None: ...

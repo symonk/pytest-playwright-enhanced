@@ -582,6 +582,10 @@ def pw_context(
     yield context
 
     passed = test_was_not_skipped_and_passed(item=request.node, key=PhaseReportKey)
+    if tracing:
+        context.tracing.stop(path=pytestconfig.artifacts_dir)
+    # cause spawned pages to also be closed for multi page scenarios.
+    context.close()
     if video != "no":
         if passed:
             # The test has passed, unlink all video files regardless.
@@ -599,12 +603,11 @@ def pw_context(
             for idx, page in enumerate(pages):
                 video = page.video
                 if video is not None:
-                    pathlib.Path(page.video.path()).rename(f"{name}-{idx}.webm")
-
-    if tracing:
-        context.tracing.stop(path=pytestconfig.artifacts_dir)
-
-    context.close()
+                    file_path = (
+                        pathlib.Path(pytestconfig.artifacts_dir) / f"{name}-{idx}.webm"
+                    )
+                    video.save_as(file_path)
+                    video.delete()
 
 
 PhaseReportKey = pytest.StashKey[typing.Dict[str, pytest.CollectReport]]()
