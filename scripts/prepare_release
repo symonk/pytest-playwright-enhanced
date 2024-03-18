@@ -7,4 +7,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 poetry version "$2"
 sed -i "s/playwright-enhanced-$1/playwright-enhanced-$2/g" "$SCRIPT_DIR/../tests/integration/test_output.py"
 sed -i "s/__version__ = \"$1\"/__version__ = \"$2\"/g" "$SCRIPT_DIR/../pytest_playwright_enhanced/__version__.py"
-tox -e py311
+if tox -e py311; then
+    git add -u
+    git commit -m "(auto-release) init release $2"
+    git push
+fi
