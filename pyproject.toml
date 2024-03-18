@@ -13,6 +13,7 @@ pytest_playwright_enhanced = "pytest_playwright_enhanced.plugin"
 python = "^3.8"
 playwright = "^1.41.2"
 pytest = "^8.0.0"
+pytest-xdist = "^3.5.0"
 python-slugify = "^8.0.4"
 
 [tool.poetry.group.dev.dependencies]
@@ -24,7 +25,6 @@ mkdocstrings = "^0.24.0"
 mkdocstrings-python = "^1.8.0"
 coverage = "^7.4.1"
 typing-extensions = "^4.9.0"
-pytest-xdist = "^3.5.0"
 pytest-cov = "^4.1.0"
 
 [build-system]
