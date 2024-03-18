@@ -137,6 +137,10 @@ def test_videos_are_not_stored_in_artifacts_folder(
     assert result.ret == pytest.ExitCode.TESTS_FAILED
 
 
+# Todo: Multiple page(s) returns multi page screenshots.
+# Todo: No video files exist even if yes but the test passes.
+
+
 def test_screenshots_are_stored_in_artifacts_folder() -> None: ...
 def test_screenshots_are_not_stored_in_artifacts_folder() -> None: ...
 

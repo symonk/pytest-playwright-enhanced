@@ -133,3 +133,17 @@ def is_master_worker(config: pytest.Config) -> bool:
     """Detect if the calling code is an xdist worker
     or the master worker."""
     return not hasattr(config, "workerinput")
+
+
+def test_was_not_skipped_and_passed(item: pytest.Item, key: pytest.StashKey) -> bool:
+    """Returns a boolean if the test item
+    was an actual phase in the call phase.
+
+    :param item: The test item.
+    :param key: The stash key for tracking status.
+
+    Note: This should only be called from a `post-yield` fixture."""
+    report = item.stash[key]
+    setup_ok = "setup" in report and not report["setup"].failed
+    call_ok = "call" in report and not report["call"].failed
+    return setup_ok and call_ok

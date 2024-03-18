@@ -24,6 +24,7 @@ from .utils import register_env_defer
 from .utils import resolve_browser_cli_flag_defaults
 from .utils import resolve_context_cli_flag_defaults
 from .utils import safe_to_run_plugin
+from .utils import test_was_not_skipped_and_passed
 
 
 @pytest.hookimpl
@@ -545,11 +546,10 @@ def pw_context(
     pages: list[pwsync.Page] = []
 
     additional_ctx_kwargs = {}
-    # Todo: This is not really 'on fail' as such, we don't have that scope
-    if pytestconfig.option.gvideo_on_fail != "no":
+    if (video := pytestconfig.option.video_on_fail) != "no":
         additional_ctx_kwargs["record_video_dir"] = pytestconfig.artifacts_dir + "/"
-        if "x" in pytestconfig.option.gvideo_on_fail:
-            width, _, height = pytestconfig.option.gvideo_on_fail.partition("x")
+        if "x" in video:
+            width, _, height = video.partition("x")
             additional_ctx_kwargs["record_video_size"] = {
                 "width": int(width),
                 "height": int(height),
@@ -577,13 +577,19 @@ def pw_context(
 
     yield context
 
-    test_result = request.node.stash[PhaseReportKey]
-    if test_result["setup"].failed:
-        # The test actually failed in setup, possibly skipped etc.
-        ...
-    elif "call" in test_result and not test_result["call"].failed:
-        # The test actually passed it's execution.
-        ...
+    passed = test_was_not_skipped_and_passed(item=request.node, key=PhaseReportKey)
+    if passed:
+        # The test has passed, unlink all video files regardless.
+        for page in pages:
+            page.video.delete()
+    else:
+        # The test failed and the user has requested to keep video artifacts
+        # Lets try and rename them to be test appropriately named rather than
+        # randomised .webm files
+        # Todo: We need to be smart here around file name lengths etc, especially on windows.
+        name = request.node.name
+        _ = name
+
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
 

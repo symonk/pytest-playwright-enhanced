@@ -13,6 +13,7 @@ pytest_playwright_enhanced = "pytest_playwright_enhanced.plugin"
 python = "^3.8"
 playwright = "^1.41.2"
 pytest = "^8.0.0"
+python-slugify = "^8.0.4"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.12.1"
