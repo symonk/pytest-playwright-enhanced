@@ -599,9 +599,7 @@ def pw_context(
             for idx, page in enumerate(pages):
                 video = page.video
                 if video is not None:
-                    path = pathlib.Path(page.video.path())
-                    # Todo: renaming like this is not doing what we think, its renaming relative to CWD?
-                    path.rename(f"{name}-{idx}.webm")
+                    pathlib.Path(page.video.path()).rename(f"{name}-{idx}.webm")
 
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
