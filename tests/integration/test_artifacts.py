@@ -87,18 +87,12 @@ def test_videos_are_stored_in_artifacts_folder(
         def test_fails_with_video(pw_page):
             pw_page.goto("https://www.google.com")
             assert False
-
-        def test_video_was_written(pw_artifacts_dir):
-            files = []
-            for f in pw_artifacts_dir.iterdir():
-                if f.is_file():
-                    files.append(f)
-            assert len(files) == 1
-            assert files[0].name.endswith(".webm")
 """)
     result = pytester.runpytest(drivers_path, "--video-on-fail", "yes")
-    result.assert_outcomes(passed=1, failed=1)
+    result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
+    expected = {"test-fails-with-video-chromium-0.webm"}
+    assert {f.name for f in pytester.path.glob("*.webm")} == expected
 
 
 def test_videos_are_stored_when_width_height_is_specified(
@@ -108,18 +102,13 @@ def test_videos_are_stored_when_width_height_is_specified(
         def test_fails_with_video(pw_page):
             pw_page.goto("https://www.google.com")
             assert False
-
-        def test_video_was_written_with_width_height(pw_artifacts_dir):
-            files = []
-            for f in pw_artifacts_dir.iterdir():
-                if f.is_file():
-                    files.append(f)
-            assert len(files) == 1
-            assert files[0].name.endswith(".webm")
 """)
     result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
-    result.assert_outcomes(passed=1, failed=1)
+    result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
+    assert {"test-fails-with-video-chromium-0.webm"} == {
+        f.name for f in pytester.path.glob("*.webm")
+    }
 
 
 def test_videos_are_not_stored_in_artifacts_folder(
@@ -127,18 +116,48 @@ def test_videos_are_not_stored_in_artifacts_folder(
 ) -> None:
     pytester.makepyfile("""
         def test_fails_without_video(pw_page):
+            pw_page.goto("https://www.google.com")
             assert False
-
-        def test_video_was_not_written(pw_artifacts_dir):
-            assert not any(pw_artifacts_dir.iterdir())
 """)
     result = pytester.runpytest(drivers_path)
-    result.assert_outcomes(passed=1, failed=1)
+    result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
+    assert not [f.name for f in pytester.path.glob("*.webm")]
 
 
-# Todo: Multiple page(s) returns multi page screenshots.
-# Todo: No video files exist even if yes but the test passes.
+def test_multiple_pages_returns_multiple_videos_in_artifacts(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+        def test_multiple_pages(pw_context):
+            one = pw_context.new_page()
+            two = pw_context.new_page()
+            one.goto("https://www.google.com")
+            two.goto("https://www.google.com")
+            # Fail to retain videos
+            assert False
+""")
+    result = pytester.runpytest(drivers_path, "--video-on-fail", "yes")
+    result.assert_outcomes(failed=1)
+    assert result.ret == pytest.ExitCode.TESTS_FAILED
+    expected_files = {
+        "test-multiple-pages-chromium-0.webm",
+        "test-multiple-pages-chromium-1.webm",
+    }
+    files = {f.name for f in pytester.path.glob("*.webm")}
+    assert files == expected_files
+
+
+def test_videos_are_removed_when_passing_regardless(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+        def test_success_no_videos(pw_page):
+            pw_page.goto("https://www.google.com")
+            assert True
+""")
+    pytester.runpytest(drivers_path, "--video-on-fail", "yes")
+    assert not [f.name for f in pytester.path.glob("*.webm")]
 
 
 def test_screenshots_are_stored_in_artifacts_folder() -> None: ...

@@ -10,6 +10,7 @@ import typing
 import pytest
 from playwright import sync_api as pwsync
 from playwright._impl._driver import get_driver_env
+from slugify import slugify
 
 from .actions import VideoAction
 from .browser_strategy import BROWSER_FACTORY
@@ -529,7 +530,10 @@ def pw_page(
     pw_context: pwsync.BrowserContext,
 ) -> typing.Generator[pwsync.Page, None, None]:
     """Launch a new page (tab) as a child of the browser context.  Context arguments
-    such as base_url are automatically applied by this point."""
+    such as base_url are automatically applied by this point.
+
+    *important*: page.close() is called by the pw_context fixture so we have access
+    to various artifacts etc prior to closing."""
     page = pw_context.new_page()
     yield page
     page.close()
@@ -578,23 +582,27 @@ def pw_context(
     yield context
 
     passed = test_was_not_skipped_and_passed(item=request.node, key=PhaseReportKey)
-    if passed:
-        # The test has passed, unlink all video files regardless.
-        for page in pages:
-            page.video.delete()
-    else:
-        # The test failed and the user has requested to keep video artifacts
-        # Lets try and rename them to be test appropriately named rather than
-        # randomised .webm files
-        # Todo: We need to be smart here around file name lengths etc, especially on windows.
-        name = request.node.name
-        _ = name
+    if video != "no":
+        if passed:
+            # The test has passed, unlink all video files regardless.
+            for page in pages:
+                # unlink the path?
+                page.video.delete()
+        else:
+            # The test failed and the user has requested to keep video artifacts
+            # Lets try and rename them to be test appropriately named rather than
+            # randomised .webm files
+            # Todo: Consider file name lengths here in future, could break with long node names
+            # such as parameterised (heavily) nodes.
+            name = slugify(request.node.name)
+            for idx, page in enumerate(pages):
+                # use save_as?
+                path = pathlib.Path(page.video.path())
+                path.rename(f"{name}-{idx}.webm")
 
     if tracing:
         context.tracing.stop(path=pytestconfig.artifacts_dir)
 
-    # Todo: Check screenshot status, iterate open page(s) and capture screenshots
-    # to the artifacts directory.
     context.close()
 
 
