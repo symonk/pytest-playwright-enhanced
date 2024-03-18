@@ -586,7 +586,6 @@ def pw_context(
         if passed:
             # The test has passed, unlink all video files regardless.
             for page in pages:
-                # unlink the path?
                 page.video.delete()
         else:
             # The test failed and the user has requested to keep video artifacts
@@ -596,7 +595,6 @@ def pw_context(
             # such as parameterised (heavily) nodes.
             name = slugify(request.node.name)
             for idx, page in enumerate(pages):
-                # use save_as?
                 path = pathlib.Path(page.video.path())
                 path.rename(f"{name}-{idx}.webm")
 
