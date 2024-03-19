@@ -57,7 +57,9 @@ def commit_and_push() -> int:
         _run_command(
             ("git", "add", "poetry.lock", ".pre-commit-config.yaml", "pyproject.toml"),
         )
-        + _run_command(("git", "commit", "-m", ":rocket: `dependency upgrades`."))
+        + _run_command(
+            ("git", "commit", "-m", "(chore) :rocket: `dependency upgrades`.")
+        )
         + _run_command(("git", "push"))
     )
 
