@@ -577,7 +577,7 @@ def pw_context(  # noqa: PLR0912 (Todo: Simplify and tidy internal impl)
     tracing = pytestconfig.option.trace_on_fail
     if tracing:
         context.tracing.start(
-            # Todo: Name, Title?
+            title=request.node.name,
             screenshots=pytestconfig.option.screenshots_on_fail != "no",
             snapshots=True,
             sources=True,

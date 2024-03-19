@@ -311,3 +311,6 @@ def test_when_failing_without_flag_no_screenshots(
     result = pytester.runpytest(launch_browser_flags)
     result.assert_outcomes(failed=1)
     assert set() == artifact_files(pytester, "png")
+
+
+# Todo: Add a test that encompasses all 3 artifacts, for multiple spawned pages in each
