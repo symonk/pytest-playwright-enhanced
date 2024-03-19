@@ -215,3 +215,16 @@ def test_multiple_videos_with_xdist_is_correct(
         "test-xdist-webkit-0.webm",
         "test-xdist-firefox-0.webm",
     } == artifact_files(pytester, "webm")
+
+
+def test_tracing_enabled_writes_an_artifact_successfully(
+    pytester: pytest.Pytester, drivers_path: str
+) -> None:
+    pytester.makepyfile("""
+        def test_tracing_artifacts_are_kept(pw_page):
+            assert False
+""")
+    result = pytester.runpytest(drivers_path, "--trace-on-fail")
+    result.assert_outcomes(failed=1)
+    files = artifact_files(pytester, "zip")
+    assert {"test-tracing-artifacts-are-kept-chromium-trace.zip"} == files

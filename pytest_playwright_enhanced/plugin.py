@@ -273,7 +273,7 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager) -> None:
 
 
 @pytest.fixture(scope=FixtureScope.Session)
-def pw_artifacts_dir(pytestconfig: pytest.Config) -> pathlib.path:
+def pw_artifacts_dir(pytestconfig: pytest.Config) -> pathlib.Path:
     """Cast the absolute path to the artifacts directory for the
     run.  This is cast in the fixture as we cannot serialize a
     pathlib.Path object across xdist workers.
@@ -547,13 +547,13 @@ def pw_context(
     pytestconfig: pytest.Config,
     pw_browser: pwsync.Browser,
     pw_context_kwargs: ContextKwargs,
+    pw_artifacts_dir: pathlib.Path,
 ) -> typing.Generator[pwsync.BrowserContext, None, None]:
     """A scope session scoped browser context."""
     pages: list[pwsync.Page] = []
-    artifacts_dir = get_artifacts_dir_from_node(pytestconfig)
     additional_ctx_kwargs = {}
     if (video := pytestconfig.option.video_on_fail) != "no":
-        additional_ctx_kwargs["record_video_dir"] = artifacts_dir + "/"
+        additional_ctx_kwargs["record_video_dir"] = pw_artifacts_dir + "/"
         if "x" in video:
             width, _, height = video.partition("x")
             additional_ctx_kwargs["record_video_size"] = {
@@ -569,11 +569,11 @@ def pw_context(
     context = pw_browser.new_context(**ctx_kwargs)
 
     # Handle trace level specifics;
-    tracing = False
-    if pytestconfig.option.trace_on_fail:
-        tracing = True
+    tracing = pytestconfig.option.trace_on_fail
+    if tracing:
         context.tracing.start(
-            screenshot=pytestconfig.option.screenshots_on_failure != "no",
+            # Todo: Name, Title?
+            screenshots=pytestconfig.option.screenshots_on_fail != "no",
             snapshots=True,
             sources=True,
         )
@@ -584,8 +584,13 @@ def pw_context(
     yield context
 
     passed = test_was_not_skipped_and_passed(item=request.node, key=PhaseReportKey)
-    if tracing:
-        context.tracing.stop(path=pytestconfig.artifacts_dir)
+
+    # Handle tracing artifact(s)
+    if not passed and tracing:
+        context.tracing.stop(
+            path=pw_artifacts_dir.joinpath(f"{slugify(request.node.name)}-trace.zip")
+        )
+
     # cause spawned pages to also be closed for multi page scenarios.
     context.close()
     if video != "no":
@@ -605,7 +610,7 @@ def pw_context(
             for idx, page in enumerate(pages):
                 video = page.video
                 if video is not None:
-                    file_path = pathlib.Path(artifacts_dir) / f"{name}-{idx}.webm"
+                    file_path = pw_artifacts_dir.joinpath(f"{name}-{idx}.webm")
                     video.save_as(file_path)
                     video.delete()
 
