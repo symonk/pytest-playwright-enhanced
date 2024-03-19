@@ -6,11 +6,11 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def drivers_path() -> str:
+def launch_browser_flags() -> str:
     """Used to allow tox runs to use the ~/.cache/ms-playwright/ binaries
     for the actual user.  This is **NOT** overly clean, there must be a
     better tox method for handling this, we do not want to have to download
-    browser binaries on every run - they are expensive and sizabl!"""
+    browser binaries on every run - they are expensive and sizable!"""
     prefix = "--drivers-path="
     if sys.platform == "linux":
         return prefix + str(

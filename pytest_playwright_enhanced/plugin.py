@@ -553,7 +553,7 @@ def pw_context(
     pages: list[pwsync.Page] = []
     additional_ctx_kwargs = {}
     if (video := pytestconfig.option.video_on_fail) != "no":
-        additional_ctx_kwargs["record_video_dir"] = pw_artifacts_dir + "/"
+        additional_ctx_kwargs["record_video_dir"] = pw_artifacts_dir
         if "x" in video:
             width, _, height = video.partition("x")
             additional_ctx_kwargs["record_video_size"] = {

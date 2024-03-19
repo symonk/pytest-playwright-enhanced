@@ -8,7 +8,7 @@ pytestmark = pytest.mark.browsers
 # I tried modifying the settings.json in .vscode/ but to no avail
 # I reinstalled vscode w/o snap to resolve.
 def test_can_launch_browsers_of_types(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
 
@@ -23,7 +23,7 @@ def test_can_launch_browsers_of_types(
         "firefox",
         "--browser",
         "webkit",
-        drivers_path,
+        launch_browser_flags,
     ).assert_outcomes(passed=3)
 
 
@@ -91,7 +91,7 @@ def test_unsupported_browser(pytester: pytest.Pytester) -> None:
 
 
 def test_all_browser_overrides_fixture(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
     import pytest
@@ -109,11 +109,11 @@ def test_all_browser_overrides_fixture(
         assert pw_browser_kwargs['chromium_sandbox']
 
 """)
-    pytester.runpytest(drivers_path).assert_outcomes(passed=1)
+    pytester.runpytest(launch_browser_flags).assert_outcomes(passed=1)
 
 
 def test_all_browser_overrides_marker(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
 
@@ -131,7 +131,7 @@ def test_all_browser_overrides_marker(
     def test_overriden_kwargs_browser(pw_browser):
         assert pw_browser.is_connected()
     """)
-    pytester.runpytest(drivers_path).assert_outcomes(passed=1)
+    pytester.runpytest(launch_browser_flags).assert_outcomes(passed=1)
 
 
 def test_browser_kwargs_defaults(pytester: pytest.Pytester) -> None:

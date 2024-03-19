@@ -83,14 +83,14 @@ def test_trace_on_fail_default(pytester: pytest.Pytester) -> None:
 
 
 def test_videos_are_stored_in_artifacts_folder(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_fails_with_video(pw_page):
             pw_page.goto("https://www.google.com")
             assert False
 """)
-    result = pytester.runpytest(drivers_path, "--video-on-fail", "yes")
+    result = pytester.runpytest(launch_browser_flags, "--video-on-fail", "yes")
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     expected = {"test-fails-with-video-chromium-0.webm"}
@@ -98,35 +98,35 @@ def test_videos_are_stored_in_artifacts_folder(
 
 
 def test_videos_are_stored_when_width_height_is_specified(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_fails_with_video(pw_page):
             pw_page.goto("https://www.google.com")
             assert False
 """)
-    result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
+    result = pytester.runpytest(launch_browser_flags, "--video-on-fail", "1024x768")
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     assert {"test-fails-with-video-chromium-0.webm"} == artifact_files(pytester, "webm")
 
 
 def test_videos_are_not_stored_in_artifacts_folder(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_fails_without_video(pw_page):
             pw_page.goto("https://www.google.com")
             assert False
 """)
-    result = pytester.runpytest(drivers_path)
+    result = pytester.runpytest(launch_browser_flags)
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     assert not artifact_files(pytester, "webm")
 
 
 def test_multiple_pages_returns_multiple_videos_in_artifacts(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_multiple_pages(pw_context):
@@ -137,7 +137,7 @@ def test_multiple_pages_returns_multiple_videos_in_artifacts(
             # Fail to retain videos
             assert False
 """)
-    result = pytester.runpytest(drivers_path, "--video-on-fail", "yes")
+    result = pytester.runpytest(launch_browser_flags, "--video-on-fail", "yes")
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     expected_files = {
@@ -148,7 +148,7 @@ def test_multiple_pages_returns_multiple_videos_in_artifacts(
 
 
 def test_multiple_pages_returns_multiple_videos_when_width_height_is_set(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_multiple_pages(pw_context):
@@ -159,7 +159,7 @@ def test_multiple_pages_returns_multiple_videos_when_width_height_is_set(
             # Fail to retain videos
             assert False
 """)
-    result = pytester.runpytest(drivers_path, "--video-on-fail", "1024x768")
+    result = pytester.runpytest(launch_browser_flags, "--video-on-fail", "1024x768")
     result.assert_outcomes(failed=1)
     assert result.ret == pytest.ExitCode.TESTS_FAILED
     expected_files = {
@@ -170,14 +170,14 @@ def test_multiple_pages_returns_multiple_videos_when_width_height_is_set(
 
 
 def test_videos_are_removed_when_passing_regardless(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_success_no_videos(pw_page):
             pw_page.goto("https://www.google.com")
             assert True
 """)
-    pytester.runpytest(drivers_path, "--video-on-fail", "yes")
+    pytester.runpytest(launch_browser_flags, "--video-on-fail", "yes")
     assert not artifact_files(pytester, "webm")
 
 
@@ -190,7 +190,7 @@ def test_traces_are_not_stored_in_artifacts_folder() -> None: ...
 
 
 def test_multiple_videos_with_xdist_is_correct(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
     def test_xdist(pw_page, pw_multi_browser):
@@ -198,7 +198,7 @@ def test_multiple_videos_with_xdist_is_correct(
         assert False
 """)
     pytester.runpytest(
-        drivers_path,
+        launch_browser_flags,
         "-n",
         3,
         "--browser",
@@ -218,13 +218,37 @@ def test_multiple_videos_with_xdist_is_correct(
 
 
 def test_tracing_enabled_writes_an_artifact_successfully(
-    pytester: pytest.Pytester, drivers_path: str
+    pytester: pytest.Pytester, launch_browser_flags: str
 ) -> None:
     pytester.makepyfile("""
         def test_tracing_artifacts_are_kept(pw_page):
             assert False
 """)
-    result = pytester.runpytest(drivers_path, "--trace-on-fail")
+    result = pytester.runpytest(launch_browser_flags, "--trace-on-fail")
     result.assert_outcomes(failed=1)
     files = artifact_files(pytester, "zip")
     assert {"test-tracing-artifacts-are-kept-chromium-trace.zip"} == files
+
+
+def test_tracing_deletes_artifact_when_test_passes_and_enabled(
+    pytester: pytest.Pytester, launch_browser_flags: str
+) -> None:
+    pytester.makepyfile("""
+        def test_tracing_artifacts_are_removed(pw_page):
+            assert True
+""")
+    result = pytester.runpytest(launch_browser_flags, "--trace-on-fail")
+    result.assert_outcomes(passed=1)
+    assert set() == artifact_files(pytester, "zip")
+
+
+def test_tracing_has_no_artifacts_when_disabled(
+    pytester: pytest.Pytester, launch_browser_flags: str
+) -> None:
+    pytester.makepyfile("""
+        def test_tracing_artifacts_are_removed(pw_page):
+            assert True
+""")
+    result = pytester.runpytest(launch_browser_flags)
+    result.assert_outcomes(passed=1)
+    assert set() == artifact_files(pytester, "zip")
