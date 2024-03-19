@@ -120,3 +120,9 @@ showcontent = true
 directory = "bugfix"
 name = "Bugfix"
 showcontent = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+# exclude does not work here; only in pre-commit!

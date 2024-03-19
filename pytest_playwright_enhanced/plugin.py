@@ -291,7 +291,7 @@ def pw_artifacts_dir(pytestconfig: pytest.Config) -> pathlib.Path:
 
 
 @pytest.hookimpl(trylast=True)
-def pytest_playwright_acquire_binaries(config: pytest.Config) -> None:  # noqa: ARG001
+def pytest_playwright_acquire_binaries(config: pytest.Config) -> pathlib.Path:  # noqa: ARG001
     """The default implementation for binary acquisition.
 
     :param config: The `pytest.Config` object. (auto injected).

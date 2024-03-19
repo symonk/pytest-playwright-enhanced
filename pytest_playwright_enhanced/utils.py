@@ -114,7 +114,7 @@ def resolve_browser_cli_flag_defaults(
     return STRATEGY_FACTORY[engine](defaults)
 
 
-def resolve_context_cli_flag_defaults(config: pytest.Config) -> None:
+def resolve_context_cli_flag_defaults(config: pytest.Config) -> dict[Any, Any]:
     """Parses context-specific options from the global command line
     options.
 
