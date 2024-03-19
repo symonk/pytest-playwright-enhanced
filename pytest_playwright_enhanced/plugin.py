@@ -103,6 +103,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Retain captured screenshots in the artifacts directory if a test fails.",
     )
     pwe.addoption(
+        "--screenshot-timeout",
+        action="store",
+        default=30_000,
+        dest="screenshot_timeout",
+        help="The timeout in milliseconds for page screenshots to be captured when failing.",
+    )
+    pwe.addoption(
         "--video-on-fail",
         action=VideoAction,
         default="no",
@@ -542,7 +549,7 @@ def pw_page(
 
 
 @pytest.fixture(scope=FixtureScope.Function)
-def pw_context(
+def pw_context(  # noqa: PLR0912 (Todo: Simplify and tidy internal impl)
     request: pytest.FixtureRequest,
     pytestconfig: pytest.Config,
     pw_browser: pwsync.Browser,
@@ -552,6 +559,8 @@ def pw_context(
     """A scope session scoped browser context."""
     pages: list[pwsync.Page] = []
     additional_ctx_kwargs = {}
+    screenshots = pytestconfig.option.screenshots_on_fail
+
     if (video := pytestconfig.option.video_on_fail) != "no":
         additional_ctx_kwargs["record_video_dir"] = pw_artifacts_dir
         if "x" in video:
@@ -560,10 +569,6 @@ def pw_context(
                 "width": int(width),
                 "height": int(height),
             }
-        # Todo: we need to support size here aswell
-    if pytestconfig.option.screenshots_on_fail != "no":
-        # Todo: This needs handled on a `Page` instead?
-        ...
 
     ctx_kwargs = {**pw_context_kwargs, **additional_ctx_kwargs}
     context = pw_browser.new_context(**ctx_kwargs)
@@ -591,6 +596,16 @@ def pw_context(
             path=pw_artifacts_dir.joinpath(f"{slugify(request.node.name)}-trace.zip")
         )
 
+    # Capture screenshots if necessary and artifact them.
+    if not passed and screenshots != "no":
+        for idx, p in enumerate(pages):
+            p.screenshot(
+                timeout=pytestconfig.option.screenshot_timeout,
+                path=pw_artifacts_dir.joinpath(
+                    f"{slugify(request.node.name)}-{idx}.png"
+                ),
+                full_page=screenshots == "full",
+            )
     # cause spawned pages to also be closed for multi page scenarios.
     context.close()
     if video != "no":

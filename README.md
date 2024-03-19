@@ -64,6 +64,7 @@ Quickly get running by doing the following:
  * `pw_root_url` - Returns the base url auto loaded by `Page` objects.
  * `pw_browser` - Returns the current `Browser` instance.
  * `pw_browser_engine` - A string representing the type of browser for this test.
+ * `pw_context` - A playwright sync `Context` object, useful for multi page scenarios.
  * `pw_context_kwargs` - An overridable fixture to control arguments to playwright `Context` instances.
  * `pw_page` - Returns a new `Page` instance.
  * `pw_is_debugging` - Returns if playwright will be using `PW_DEBUG` mode.
