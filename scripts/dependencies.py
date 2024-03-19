@@ -52,7 +52,7 @@ def pre_commit_update() -> int:
     return _run_command(("pre-commit", "autoupdate"))
 
 
-def commit_and_push() -> tuple[int, int, int]:
+def commit_and_push() -> int:
     return (
         _run_command(
             ("git", "add", "poetry.lock", ".pre-commit-config.yaml", "pyproject.toml"),
