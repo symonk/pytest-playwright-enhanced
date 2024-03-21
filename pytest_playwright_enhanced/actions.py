@@ -12,41 +12,26 @@ class VideoAction(Action):
     yes, no or a custom widthXheight.
     """
 
-    def __init__(
-        self: VideoAction,
-        option_strings: str,
-        dest: str,
-        nargs: str | None = None,
-        **kwargs: dict,
-    ) -> None:
-        if nargs is not None:
-            raise ValueError("nargs not allowed")
-        super().__init__(option_strings, dest, **kwargs)
-
-    # Todo: Tidy this implementation.
     def __call__(
         self: VideoAction,
         parser: pytest.Parser,  # noqa: ARG002
         namespace: Namespace,
         values: str,
-        option_string: str | None = None,  # noqa: ARG002
+        option_string: list[str],  # noqa: ARG002
     ) -> str:
-        to_lower = values.lower()
-        if to_lower in {"yes", "no"}:
-            setattr(namespace, self.dest, to_lower)
-            return
-        if "x" in to_lower:
-            # Attempt to parse a width by height.
-            width, _, height = to_lower.partition("x")
+        video_action = values.lower()
+        if video_action not in {"yes", "no"} and "x" not in video_action:
+            raise ArgumentError(
+                self,
+                "can only be 'yes', 'no' or a width x height string such as '800x640'",
+            )
+        if "x" in video_action:
+            width, _, height = video_action.partition("x")
             try:
-                int(width)
-                int(height)
-                setattr(namespace, self.dest, to_lower)
-                return
+                int(width), int(height)
             except ValueError:
                 raise ArgumentError(
                     self, "width x height option must both be valid integers"
                 ) from None
-        raise ArgumentError(
-            self, "can only be 'yes', 'no' or a width x height string such as '800x640'"
-        )
+
+        setattr(namespace, self.dest, video_action)
