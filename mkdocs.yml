@@ -22,7 +22,9 @@ watch:
   - pytest_playwright_enhanced
 nav:
     - Installation: install.md 
-    - Quickstart: index.md
+    - Commandline Arguments: cli.md
+    - Fixtures: fixtures.md
+    - Hooks: hooks.md
 plugins:
     - search
     - mkdocstrings:
