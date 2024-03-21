@@ -1,2 +1,1 @@
-# Welcome to the documentation for `pytest-playwright-enhanced`.
-
+## `pytest-playwright-enhanced` documentation
