@@ -60,8 +60,9 @@ def test_my_app(pw_page):
 @pytest.mark.browser_kwargs(callback=my_function_that_returns_kwargs)
 @pytest.mark.context_kwargs(callback=my_function_that_returns_kwargs)
 def test_my_app(pw_page):
-    # internally machinery will invoke `my_function_that_returns_kwargs` later to get overrides.
+    # internal machinery will invoke `my_function_that_returns_kwargs` later to get overrides.
     # These are merged sensible with CLI and other PWE defaults.
+    ...
 ```
 
 Alternatively, if you need more dynamicism, overwrite the fixture and take full control:
