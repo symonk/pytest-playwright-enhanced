@@ -56,9 +56,16 @@ def test_my_app(pw_page):
     # This page will have a preconfigured browser and context from the marker arguments.
     ...
 
+
+def my_function(config: pytest.Config) -> dict[typing.Any, typing.Any]:
+    return {
+        # custom options.
+        # inspect CLI if you need via config.
+    }
+    
 # if you need to calculate the args at runtime, later use:
-@pytest.mark.browser_kwargs(callback=my_function_that_returns_kwargs)
-@pytest.mark.context_kwargs(callback=my_function_that_returns_kwargs)
+@pytest.mark.browser_kwargs(callback=my_function)
+@pytest.mark.context_kwargs(callback=my_function)
 def test_my_app(pw_page):
     # internal machinery will invoke `my_function_that_returns_kwargs` later to get overrides.
     # These are merged sensible with CLI and other PWE defaults.
