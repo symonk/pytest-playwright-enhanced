@@ -513,11 +513,13 @@ def pw_browser_kwargs(
     no merging will then occur and they will be responsible for calculating everything.
     """
     defaults = resolve_browser_cli_flag_defaults(request.config, pw_browser_engine)
-    if proxy := request.config.hook.pytest_playwright_configure_proxy(
-        config=request.config
-    ):
+    if (
+        proxy := request.config.hook.pytest_playwright_configure_proxy(
+            config=request.config
+        )
+    ) is not None:
         # Allow user defined hooks to implement a proxy at runtime.
-        defaults.update(**proxy)
+        defaults["proxy"] = proxy
 
     # Handle some debugging magic, if an IDE or debug mode is detected, automatically
     # force the browsers to open headed.

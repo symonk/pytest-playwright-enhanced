@@ -216,9 +216,9 @@ def test_custom_plugin_overwrites_proxy(pytester: pytest.Pytester) -> None:
 """)
     pytester.makepyfile("""
         def test_overwritten_proxy(pw_browser_kwargs):
-            assert pw_browser_kwargs['server'] == 'foo'
-            assert pw_browser_kwargs['bypass'] == 'bar'
-            assert pw_browser_kwargs['username'] == 'baz'
-            assert pw_browser_kwargs['password'] == 'no'
+            assert pw_browser_kwargs['proxy']['server'] == 'foo'
+            assert pw_browser_kwargs['proxy']['bypass'] == 'bar'
+            assert pw_browser_kwargs['proxy']['username'] == 'baz'
+            assert pw_browser_kwargs['proxy']['password'] == 'no'
 """)
-    pytester.runpytest().assert_outcomes(passed=True)
+    pytester.runpytest().assert_outcomes(passed=1)
