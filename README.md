@@ -45,7 +45,41 @@ Quickly get running by doing the following:
 
 ## Overriding Browser and Context args
 
-...
+There are two methods for overwriting both `browser` and `context` arguments at runtime.  These are:
+
+```python
+import pytest
+
+@pytest.mark.browser_kwargs(env={}, timeout=15)
+@pytest.mark.context_kwargs()
+def test_my_app(pw_page):
+    # This page will have a preconfigured browser and context from the marker arguments.
+    ...
+
+# if you need to calculate the args at runtime, later use:
+@pytest.mark.browser_kwargs(callback=my_function_that_returns_kwargs)
+@pytest.mark.context_kwargs(callback=my_function_that_returns_kwargs)
+def test_my_app(pw_page):
+    # internally machinery will invoke `my_function_that_returns_kwargs` later to get overrides.
+    # These are merged sensible with CLI and other PWE defaults.
+```
+
+Alternatively, if you need more dynamicism, overwrite the fixture and take full control:
+
+```python
+import pytest
+
+@pytest.fixture(scope="function")
+def pw_browser_contexts(config: pytest.Config) -> dict[typing.Any, typing.Any]:
+    return {
+        # Any overrides here,
+        # ...
+    }
+```
+
+> [!CAUTION]
+> If you chose the fixture route, you are responsible for all details, PWE defaults will not be included.
+> Using the markers, a deferred function can be used to calculate args at runtime!
 
 -----
 
