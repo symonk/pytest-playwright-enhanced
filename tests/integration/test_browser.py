@@ -195,3 +195,30 @@ def test_dynamic_callback_is_merged(pytester: pytest.Pytester) -> None:
             assert pw_browser_kwargs['item'] == request.node.name
 """)
     pytester.runpytest().assert_outcomes(passed=1)
+
+
+def test_default_browser_kwargs_has_no_proxy(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+        def test_default_proxy(pw_browser_kwargs):
+            assert pw_browser_kwargs.get("proxy") is None
+""")
+    pytester.runpytest().assert_outcomes(passed=1)
+
+
+def test_custom_plugin_overwrites_proxy(pytester: pytest.Pytester) -> None:
+    pytester.makeconftest("""
+        import pytest
+        from playwright.sync_api import ProxySettings
+
+        @pytest.hookimpl
+        def pytest_playwright_configure_proxy(config):
+            return ProxySettings(server="foo", bypass="bar", username="baz", password="no")
+""")
+    pytester.makepyfile("""
+        def test_overwritten_proxy(pw_browser_kwargs):
+            assert pw_browser_kwargs['server'] == 'foo'
+            assert pw_browser_kwargs['bypass'] == 'bar'
+            assert pw_browser_kwargs['username'] == 'baz'
+            assert pw_browser_kwargs['password'] == 'no'
+""")
+    pytester.runpytest().assert_outcomes(passed=True)

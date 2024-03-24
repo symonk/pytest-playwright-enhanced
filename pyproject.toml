@@ -38,6 +38,9 @@ line-length = 88
 indent-width = 4
 target-version = "py38"
 
+[tool.ruff.lint.per-file-ignores]
+"pytest_playwright_enhanced/hooks.py" = ["ARG001"]
+
 [tool.ruff.lint]
 select = [
     "F", 
