@@ -5,6 +5,7 @@ from typing import Any
 
 import pytest
 
+from .const import SupportedBrowsers
 from .exceptions import PWEMarkerError
 from .launch_kwargs_strategy import STRATEGY_FACTORY
 
@@ -91,6 +92,7 @@ def resolve_browser_cli_flag_defaults(
 
     Some options are engine specific, these are automatically filtered out.
     """
+    check_engine(engine)
     defaults = {}
     if (exec_path := config.option.executable_path) is not None:
         defaults["executable_path"] = exec_path
@@ -154,3 +156,11 @@ def get_artifacts_dir_from_node(pytestconfig: pytest.Config) -> str:
     if hasattr(pytestconfig, "workerinput"):
         return pytestconfig.workerinput["artifacts_dir"]
     return pytestconfig.artifacts_dir
+
+
+def check_engine(engine: str) -> None:
+    """Enforces the engine is valid.  Engine can be derived from multiple
+    different sources."""
+    if engine not in SupportedBrowsers:
+        err = f"{engine} is not a valid browser engine, choose one of {SupportedBrowsers}."
+        raise pytest.UsageError(err)

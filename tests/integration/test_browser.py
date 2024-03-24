@@ -3,6 +3,27 @@ import pytest
 pytestmark = pytest.mark.browsers
 
 
+def test_browser_with_invalid_engine_raises(pytester: pytest.Pytester) -> None:
+    pytester.makepyfile("""
+        import pytest
+
+        @pytest.fixture(scope="function")
+        def pw_browser_engine():
+            return "foo"
+
+        def test_wrong_engine(pw_browser):
+            ...
+""")
+    result = pytester.runpytest()
+    assert result.ret == pytest.ExitCode.TESTS_FAILED
+    result.stdout.fnmatch_lines(
+        [
+            "*UsageError: foo is not a valid browser engine, choose one of ('chromium', 'firefox', 'webkit')."
+        ]
+    )
+    result.assert_outcomes(errors=1)
+
+
 # This test will break for webkit if you have a snap install of Vscode.
 # https://github.com/microsoft/playwright/issues/23899
 # I tried modifying the settings.json in .vscode/ but to no avail
@@ -85,7 +106,7 @@ def test_is_firefox(pytester: pytest.Pytester) -> None:
 def test_unsupported_browser(pytester: pytest.Pytester) -> None:
     result = pytester.runpytest("--browser", "no")
     result.stderr.fnmatch_lines(
-        "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'webkit', 'firefox')",
+        "*error: argument --browser: invalid choice: 'no' (choose from 'chromium', 'firefox', 'webkit')",
     )
     assert result.ret == pytest.ExitCode.USAGE_ERROR
 

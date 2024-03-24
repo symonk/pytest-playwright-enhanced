@@ -1,5 +1,6 @@
 import pytest
 
+from pytest_playwright_enhanced.utils import check_engine
 from pytest_playwright_enhanced.utils import safe_to_run_plugin
 
 
@@ -29,3 +30,11 @@ def test_safe_to_run_plugin(pytestconfig: pytest.Config) -> None:
     pytestconfig.option.showfixtures = False
     pytestconfig.option.collectonly = False
     assert safe_to_run_plugin(pytestconfig)
+
+
+def test_valid_engine() -> None:
+    assert check_engine("chromium") is None
+    assert check_engine("firefox") is None
+    assert check_engine("webkit") is None
+    with pytest.raises(pytest.UsageError):
+        check_engine("foo")

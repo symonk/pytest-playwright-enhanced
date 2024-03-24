@@ -18,7 +18,9 @@ from .browser_strategy import BROWSER_FACTORY
 from .const import BrowserEngine
 from .const import EnvironmentVars
 from .const import FixtureScope
+from .const import SupportedBrowsers
 from .types import ContextKwargs
+from .utils import check_engine
 from .utils import get_artifacts_dir_from_node
 from .utils import is_master_worker
 from .utils import parse_browser_kwargs_from_node
@@ -58,7 +60,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="append",
         default=[],
         dest="browser",
-        choices=(BrowserEngine.CHROMIUM, BrowserEngine.WEBKIT, BrowserEngine.FIREFOX),
+        choices=SupportedBrowsers,
         help="The browsers to run all tests against.  Defaults to only chromium",
     )
     pwe.addoption(
@@ -485,6 +487,7 @@ def pw_browser(
     pw_browser_kwargs: ContextKwargs,
 ) -> typing.Generator[pwsync.Browser, None, None]:
     """Yields the core browser instance."""
+    check_engine(pw_browser_engine)
     try:
         browser = BROWSER_FACTORY[pw_browser_engine](pw_playwright, pw_browser_kwargs)
     except pwsync.Error as err:

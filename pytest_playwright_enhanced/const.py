@@ -20,3 +20,11 @@ class EnvironmentVars:
     PLAYWRIGHT_DOWNLOAD_HOST = "PLAYWRIGHT_DOWNLOAD_HOST"
     PLAYWRIGHT_BROWSERS_PATH = "PLAYWRIGHT_BROWSERS_PATH"
     PYTEST_CURRENT_TEST = "PYTEST_CURRENT_TEST"
+
+
+# This is a tuple, not set as order is important.
+SupportedBrowsers = (
+    BrowserEngine.CHROMIUM,
+    BrowserEngine.FIREFOX,
+    BrowserEngine.WEBKIT,
+)
