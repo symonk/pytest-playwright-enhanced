@@ -49,6 +49,7 @@ There are two methods for overwriting both `browser` and `context` arguments at 
 
 ```python
 import pytest
+import typing
 
 @pytest.mark.browser_kwargs(env={}, timeout=15)
 @pytest.mark.context_kwargs()
@@ -78,6 +79,7 @@ Alternatively, if you need more dynamicism, overwrite the fixture and take full 
 
 ```python
 import pytest
+import typing
 
 @pytest.fixture(scope="function")
 def pw_browser_contexts(config: pytest.Config) -> dict[typing.Any, typing.Any]:
