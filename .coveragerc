@@ -1,6 +1,4 @@
 [run]
-concurrency = multiprocessing
-parallel = true
 source = pytest_playwright_enhanced/
 omit = tests/
 
