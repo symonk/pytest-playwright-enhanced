@@ -1,3 +1,3 @@
-from .page import PlaywrightPageMixin
+from .page import PlaywrightEnhancedPage
 
-__all__ = ["PlaywrightPageMixin"]
+__all__ = ["PlaywrightEnhancedPage"]

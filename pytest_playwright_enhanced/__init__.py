@@ -1,4 +1,4 @@
 from .__version__ import __version__  # noqa
-from .pages import PlaywrightPageMixin
+from .pages import PlaywrightEnhancedPage
 
-__all__ = ["PlaywrightPageMixin"]
+__all__ = ["PlaywrightEnhancedPage"]
